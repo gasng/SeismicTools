@@ -50,6 +50,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="DeleteBtn">
+            <property name="text">
+             <string>Очистить</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -59,6 +66,13 @@
           <string>FK - ФИЛЬТРАЦИЯ</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QPushButton" name="PlotSeismogramBtn">
+            <property name="text">
+             <string>Построить сейсмограмму</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QPushButton" name="FkBtn">
             <property name="text">
