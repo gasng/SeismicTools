@@ -13,6 +13,7 @@ class FK_filter(QtWidgets.QMainWindow):
         self.apply_style()
 
         self.ui.SeismicDataBtn.clicked.connect(self.get_filepath)
+        self.ui.DeleteBtn.clicked.connect(self.delete_selected_file)
 
     def get_filepath(self):
 
@@ -25,6 +26,14 @@ class FK_filter(QtWidgets.QMainWindow):
         self.ui.SeismicDataLW.clear()
         for item in lw_items:
             self.ui.SeismicDataLW.addItem(item)
+
+    def delete_selected_file(self):
+        current_row = self.ui.SeismicDataLW.currentRow()
+        if current_row >= 0:
+            self.ui.SeismicDataLW.takeItem(current_row)
+        else:
+            self.ui.ErrorLW.addItem("⚠️ Сначала выберите файл для удаления.")
+            self.ui.ErrorLW.scrollToBottom()
 
     def apply_style(self):
         style = """
