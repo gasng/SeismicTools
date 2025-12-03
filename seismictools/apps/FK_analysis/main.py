@@ -1,9 +1,15 @@
 import sys
 import numpy as np
 from PySide6 import QtWidgets
+from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QFileDialog
 
+from seismictools.apps.FK_analysis.Controller.WorkerReader import WorkerReader
 from seismictools.apps.FK_analysis.UI.SettingsWidget_ui import  Ui_FK_Filtration
+
+
+
+
 
 class FK_filter(QtWidgets.QMainWindow):
     def __init__(self):
@@ -14,6 +20,8 @@ class FK_filter(QtWidgets.QMainWindow):
 
         self.ui.SeismicDataBtn.clicked.connect(self.get_filepath)
         self.ui.DeleteBtn.clicked.connect(self.delete_selected_file)
+        self.threadpool = QThreadPool()
+        self.ui.PlotSeismogramBtn.clicked.connect(self.start_reading)
 
     def get_filepath(self):
 
@@ -35,6 +43,36 @@ class FK_filter(QtWidgets.QMainWindow):
         else:
             self.ui.ErrorLW.addItem("⚠️ Сначала выберите файл для удаления.")
             self.ui.ErrorLW.scrollToBottom()
+
+    def start_reading(self):
+        current_item = self.ui.SeismicDataLW.currentItem()
+        if not current_item:
+            self.ui.ErrorLW.addItem("⚠️ Выберите файл для загрузки.")
+            self.ui.ErrorLW.scrollToBottom()
+            return
+
+        filepath = current_item.text()
+        worker = WorkerReader(filepath)
+        worker.signals.message.connect(self.on_worker_message)
+        worker.signals.result.connect(self.on_reader_result)
+        worker.signals.error.connect(self.on_worker_error)
+        self.threadpool.start(worker)
+
+    def on_worker_message(self, msg: str):
+        self.ui.ErrorLW.addItem(f"ℹ️ {msg}")
+        self.ui.ErrorLW.scrollToBottom()
+
+    def on_worker_error(self, error: str):
+        self.ui.ErrorLW.addItem(f"❌ {error}")
+        self.ui.ErrorLW.scrollToBottom()
+
+    def on_reader_result(self, result):
+        if result is not None:
+            self.clear_layout(self.ui.plotLayout)
+            my_plot_widget = GatherPlotWidget(result.data)
+            self.ui.plotLayout.addWidget(my_plot_widget)
+        else:
+            print("Загрузка не удалась")
 
     def apply_style(self):
         style = """
