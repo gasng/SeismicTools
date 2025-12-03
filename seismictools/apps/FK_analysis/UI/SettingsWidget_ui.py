@@ -26,6 +26,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1151, 605)
+        MainWindow.setStyleSheet(u"")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
@@ -97,10 +98,10 @@ class Ui_MainWindow(object):
         self.ErrorGB.setObjectName(u"ErrorGB")
         self.verticalLayout_4 = QVBoxLayout(self.ErrorGB)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.listWidget = QListWidget(self.ErrorGB)
-        self.listWidget.setObjectName(u"listWidget")
+        self.ErrorLW = QListWidget(self.ErrorGB)
+        self.ErrorLW.setObjectName(u"ErrorLW")
 
-        self.verticalLayout_4.addWidget(self.listWidget)
+        self.verticalLayout_4.addWidget(self.ErrorLW)
 
 
         self.verticalLayout.addWidget(self.ErrorGB)
@@ -110,22 +111,22 @@ class Ui_MainWindow(object):
 
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.verticalLayout_5 = QVBoxLayout(self.groupBox)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.horizontalLayout_4 = QHBoxLayout(self.groupBox)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.SeismogramPW = PlotWidget(self.groupBox)
         self.SeismogramPW.setObjectName(u"SeismogramPW")
 
-        self.verticalLayout_5.addWidget(self.SeismogramPW)
+        self.horizontalLayout_4.addWidget(self.SeismogramPW)
 
         self.FkPW = PlotWidget(self.groupBox)
         self.FkPW.setObjectName(u"FkPW")
 
-        self.verticalLayout_5.addWidget(self.FkPW)
+        self.horizontalLayout_4.addWidget(self.FkPW)
 
         self.ResultPW = PlotWidget(self.groupBox)
         self.ResultPW.setObjectName(u"ResultPW")
 
-        self.verticalLayout_5.addWidget(self.ResultPW)
+        self.horizontalLayout_4.addWidget(self.ResultPW)
 
 
         self.horizontalLayout.addWidget(self.groupBox)
