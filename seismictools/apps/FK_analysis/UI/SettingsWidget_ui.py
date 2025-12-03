@@ -21,13 +21,13 @@ from PySide6.QtWidgets import (QApplication, QGroupBox, QHBoxLayout, QLabel,
 
 from pyqtgraph import PlotWidget
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1151, 605)
-        MainWindow.setStyleSheet(u"")
-        self.centralwidget = QWidget(MainWindow)
+class Ui_FK_Filtration(object):
+    def setupUi(self, FK_Filtration):
+        if not FK_Filtration.objectName():
+            FK_Filtration.setObjectName(u"FK_Filtration")
+        FK_Filtration.resize(1151, 605)
+        FK_Filtration.setStyleSheet(u"")
+        self.centralwidget = QWidget(FK_Filtration)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -131,29 +131,29 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.groupBox)
 
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QStatusBar(MainWindow)
+        FK_Filtration.setCentralWidget(self.centralwidget)
+        self.statusbar = QStatusBar(FK_Filtration)
         self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        FK_Filtration.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(FK_Filtration)
 
-        QMetaObject.connectSlotsByName(MainWindow)
+        QMetaObject.connectSlotsByName(FK_Filtration)
     # setupUi
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.ToolGB.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u0430\u043d\u0435\u043b\u044c \u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u043e\u0432", None))
-        self.SeismicDataGB.setTitle(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0434\u0430\u043d\u043d\u044b\u0445", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"\u0424\u043e\u0440\u043c\u0430\u0442: .sgy / .segy", None))
-        self.SeismicDataBtn.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0431\u0437\u043e\u0440", None))
-        self.DeleteBtn.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
-        self.SeismicStartGB.setTitle(QCoreApplication.translate("MainWindow", u"FK - \u0424\u0418\u041b\u042c\u0422\u0420\u0410\u0426\u0418\u042f", None))
-        self.PlotSeismogramBtn.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0441\u0435\u0439\u0441\u043c\u043e\u0433\u0440\u0430\u043c\u043c\u0443", None))
-        self.FkBtn.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c FK-\u0441\u043f\u0435\u043a\u0442\u0440", None))
-        self.SignalBtn.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0434\u0435\u043b\u0438\u0442\u044c \u0446\u0435\u043b\u0435\u0432\u043e\u0439 \u0441\u0438\u0433\u043d\u0430\u043b", None))
-        self.ResultBtn.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0431\u0440\u0430\u0442\u043d\u043e\u0435 FK-\u043f\u0440\u0435\u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0435", None))
-        self.ErrorGB.setTitle(QCoreApplication.translate("MainWindow", u"\u041e\u043a\u043d\u043e \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u044f", None))
-        self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"Seismic Filtering (FK)", None))
+    def retranslateUi(self, FK_Filtration):
+        FK_Filtration.setWindowTitle(QCoreApplication.translate("FK_Filtration", u"MainWindow", None))
+        self.ToolGB.setTitle(QCoreApplication.translate("FK_Filtration", u"\u041f\u0430\u043d\u0435\u043b\u044c \u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u043e\u0432", None))
+        self.SeismicDataGB.setTitle(QCoreApplication.translate("FK_Filtration", u"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0434\u0430\u043d\u043d\u044b\u0445", None))
+        self.label.setText(QCoreApplication.translate("FK_Filtration", u"\u0424\u043e\u0440\u043c\u0430\u0442: .sgy / .segy", None))
+        self.SeismicDataBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041e\u0431\u0437\u043e\u0440", None))
+        self.DeleteBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
+        self.SeismicStartGB.setTitle(QCoreApplication.translate("FK_Filtration", u"FK - \u0424\u0418\u041b\u042c\u0422\u0420\u0410\u0426\u0418\u042f", None))
+        self.PlotSeismogramBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0441\u0435\u0439\u0441\u043c\u043e\u0433\u0440\u0430\u043c\u043c\u0443", None))
+        self.FkBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c FK-\u0441\u043f\u0435\u043a\u0442\u0440", None))
+        self.SignalBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u0412\u044b\u0434\u0435\u043b\u0438\u0442\u044c \u0446\u0435\u043b\u0435\u0432\u043e\u0439 \u0441\u0438\u0433\u043d\u0430\u043b", None))
+        self.ResultBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041e\u0431\u0440\u0430\u0442\u043d\u043e\u0435 FK-\u043f\u0440\u0435\u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0435", None))
+        self.ErrorGB.setTitle(QCoreApplication.translate("FK_Filtration", u"\u041e\u043a\u043d\u043e \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u044f", None))
+        self.groupBox.setTitle(QCoreApplication.translate("FK_Filtration", u"Seismic Filtering (FK)", None))
     # retranslateUi
 

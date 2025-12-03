@@ -3,12 +3,12 @@ import numpy as np
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QFileDialog
 
-from seismictools.apps.FK_analysis.UI.SettingsWidget_ui import  Ui_MainWindow
+from seismictools.apps.FK_analysis.UI.SettingsWidget_ui import  Ui_FK_Filtration
 
 class FK_filter(QtWidgets.QMainWindow):
     def __init__(self):
         super(FK_filter, self).__init__()
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_FK_Filtration()
         self.ui.setupUi(self)
         self.apply_style()
 
@@ -20,7 +20,8 @@ class FK_filter(QtWidgets.QMainWindow):
         lw_items = [self.ui.SeismicDataLW.item(i).text() for i in range(self.ui.SeismicDataLW.count())]
         file_path, _ = QFileDialog.getOpenFileName(self,
                                                    "Дай файл",
-                                                   "")
+                                                   "",
+                                                   "*.segy *.sgy")
         lw_items.append(file_path)
         lw_items = list(set(lw_items))
         self.ui.SeismicDataLW.clear()
