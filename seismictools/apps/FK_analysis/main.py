@@ -4,11 +4,10 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QFileDialog
 
+from seismictools.apps.FK_analysis.Calculate.Reader import SegYReader
 from seismictools.apps.FK_analysis.Controller.WorkerReader import WorkerReader
 from seismictools.apps.FK_analysis.UI.SettingsWidget_ui import  Ui_FK_Filtration
-
-
-
+from seismictools.apps.FK_analysis.View.PlotWidgets import PlotSeism
 
 
 class FK_filter(QtWidgets.QMainWindow):
@@ -22,6 +21,14 @@ class FK_filter(QtWidgets.QMainWindow):
         self.ui.DeleteBtn.clicked.connect(self.delete_selected_file)
         self.threadpool = QThreadPool()
         self.ui.PlotSeismogramBtn.clicked.connect(self.start_reading)
+
+        self.plot_seism = PlotSeism(
+            seismogram_pw=self.ui.SeismogramPW,
+            fk_pw=self.ui.FkPW,
+            result_pw=self.ui.ResultPW,
+            error_lw=self.ui.ErrorLW
+        )
+
 
     def get_filepath(self):
 
@@ -68,11 +75,15 @@ class FK_filter(QtWidgets.QMainWindow):
 
     def on_reader_result(self, result):
         if result is not None:
-            self.clear_layout(self.ui.plotLayout)
-            my_plot_widget = GatherPlotWidget(result.data)
-            self.ui.plotLayout.addWidget(my_plot_widget)
-        else:
-            print("Загрузка не удалась")
+            current_item = self.ui.SeismicDataLW.currentItem()
+            if not current_item:
+                self.ui.ErrorLW.addItem("⚠️ Выберите файл")
+                return
+            try:
+                data = SegYReader.read(current_item.text()).data
+                self.plot_seism.plot_seismogram(data)
+            except Exception as e:
+                self.ui.ErrorLW.addItem(f"❌ {str(e)}")
 
     def apply_style(self):
         style = """
