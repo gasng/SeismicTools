@@ -7,100 +7,114 @@
     <x>0</x>
     <y>0</y>
     <width>1035</width>
-    <height>623</height>
+    <height>801</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+    background-color: #2962FF;
+    color: white;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #1E40AF;
+}
+
+QPushButton:pressed {
+    background-color: #172554;
+}
+
+QLineEdit {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: #f9f9f9;
+}
+
+QLineEdit:focus {
+    border: 1px solid #2962FF;
+    background-color: white;
+}
+
+QLabel {
+    color: #333;
+    font-size: 10pt;
+}
+
+QGroupBox {
+    font-weight: bold;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: 10px;
+    padding: 10px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px;
+}</string>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
-    <widget class="QGroupBox" name="leftBox">
+    <widget class="QGroupBox" name="mainBox">
      <property name="title">
-      <string/>
+      <string>GroupBox</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
-       <widget class="QGroupBox" name="DataLoadBox">
+       <widget class="QGroupBox" name="leftBox">
         <property name="title">
-         <string>Загрузка данных</string>
+         <string/>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>SGY -  файл</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_filePath">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_load">
-           <property name="text">
-            <string>Загрузить</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_clear">
-           <property name="text">
-            <string>Очистить</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>формат: .sgy / .segy</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="VanalisisBox">
-        <property name="title">
-         <string>Скоростной анализ</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QPushButton" name="pushButton_velocitySpectrum">
-           <property name="text">
-            <string>Построить скоростной спектр</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_velocityLaw">
-           <property name="text">
-            <string>Построить скоростной закон</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="pickBox">
+          <widget class="QGroupBox" name="DataLoadBox">
            <property name="title">
-            <string/>
+            <string>Загрузка данных</string>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout">
+           <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QRadioButton" name="radioButton_pick">
+             <widget class="QLabel" name="label">
               <property name="text">
-               <string>режим пикировки</string>
+               <string>SGY -  файл</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButton_view">
+             <widget class="QListWidget" name="Datalist"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_choice">
               <property name="text">
-               <string>режим обзора</string>
+               <string>Обзор</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_load">
+              <property name="text">
+               <string>Загрузить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_clear">
+              <property name="text">
+               <string>Очистить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>формат: .sgy / .segy</string>
               </property>
              </widget>
             </item>
@@ -108,47 +122,141 @@
           </widget>
          </item>
          <item>
-          <widget class="QTableWidget" name="tableWidget_picks">
-           <property name="columnCount">
-            <number>3</number>
+          <widget class="QGroupBox" name="VanalisisBox">
+           <property name="title">
+            <string>Скоростной анализ</string>
            </property>
-           <column/>
-           <column/>
-           <column/>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPushButton" name="pushButton_velocitySpectrum">
+              <property name="text">
+               <string>Построить скоростной спектр</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_velocityLaw">
+              <property name="text">
+               <string>Построить скоростной закон</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="pickBox">
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QRadioButton" name="radioButton_pick">
+                 <property name="text">
+                  <string>режим пикировки</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_view">
+                 <property name="text">
+                  <string>режим обзора</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="tableWidget_picks">
+              <property name="columnCount">
+               <number>3</number>
+              </property>
+              <column/>
+              <column/>
+              <column/>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_undoPick">
+              <property name="text">
+               <string>Отменить пик</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_clearAll">
+              <property name="text">
+               <string>Очистить всё</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_applyCorrections">
+              <property name="text">
+               <string>Введение кинематических поправок</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_undoPick">
-           <property name="text">
-            <string>Отменить пик</string>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Окно состояния</string>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_clearAll">
-           <property name="text">
-            <string>Очистить всё</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_applyCorrections">
-           <property name="text">
-            <string>Введение кинематических поправок</string>
-           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLineEdit" name="MessageLine"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="MessageBtn">
+              <property name="text">
+               <string>PushButton</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
+      <item>
+       <widget class="QGroupBox" name="rightBox">
+        <property name="title">
+         <string>GroupBox</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <layout class="QVBoxLayout" name="plotLayout">
+           <item>
+            <widget class="QFrame" name="frame">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="rightBox">
-     <property name="title">
-      <string>GroupBox</string>
-     </property>
     </widget>
    </item>
   </layout>
