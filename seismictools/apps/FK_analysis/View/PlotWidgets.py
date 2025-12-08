@@ -34,8 +34,9 @@ class PlotSeism:
         self.current_data = data
         self.seismogram_pw.clear()
         img = pg.ImageItem()
-        img.setImage(data.T)  # время по вертикали
+        img.setImage(data)
         self.seismogram_pw.addItem(img)
+        self.seismogram_pw.invertY(True)
         self.seismogram_pw.setLabel('left', 'Время')
         self.seismogram_pw.setLabel('bottom', 'Трасса')
         self.seismogram_pw.setTitle('Сейсмограмма')

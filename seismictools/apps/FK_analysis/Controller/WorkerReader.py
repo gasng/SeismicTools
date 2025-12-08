@@ -1,5 +1,3 @@
-# seismictools/apps/FK_analysis/workers/ReaderWorker.py
-
 from PySide6.QtCore import QObject, Signal, QRunnable, Slot
 from seismictools.apps.FK_analysis.Calculate.Reader import SegYReader
 
