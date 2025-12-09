@@ -5,6 +5,7 @@ from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QFileDialog
 
 from seismictools.apps.FK_analysis.Calculate.Reader import SegYReader
+from seismictools.apps.FK_analysis.Controller.FkForwardWorker import FkForwardWorker
 from seismictools.apps.FK_analysis.Controller.WorkerReader import WorkerReader
 from seismictools.apps.FK_analysis.UI.SettingsWidget_ui import  Ui_FK_Filtration
 from seismictools.apps.FK_analysis.View.PlotWidgets import PlotSeism
@@ -16,6 +17,9 @@ class FK_filter(QtWidgets.QMainWindow):
         self.ui = Ui_FK_Filtration()
         self.ui.setupUi(self)
         self.apply_style()
+        self.current_segy_data = None # Это наши сохраненные прочитанные данные
+        self.current_fk_spectrum = None # Это сохраненные данные FK-преобразования
+        self.current_result_data = None  # "Это сохраненный результат обратного FK
 
         self.ui.SeismicDataBtn.clicked.connect(self.get_filepath)
         self.ui.DeleteBtn.clicked.connect(self.delete_selected_file)
@@ -28,6 +32,8 @@ class FK_filter(QtWidgets.QMainWindow):
             result_pw=self.ui.ResultPW,
             error_lw=self.ui.ErrorLW
         )
+
+        self.ui.FkBtn.clicked.connect(self.start_plot_fk)
 
 
     def get_filepath(self):
@@ -75,15 +81,29 @@ class FK_filter(QtWidgets.QMainWindow):
 
     def on_reader_result(self, result):
         if result is not None:
-            current_item = self.ui.SeismicDataLW.currentItem()
-            if not current_item:
-                self.ui.ErrorLW.addItem("Выберите файл")
-                return
-            try:
-                data = SegYReader.read(current_item.text()).data
-                self.plot_seism.plot_seismogram(data)
-            except Exception as e:
-                self.ui.ErrorLW.addItem(f"{str(e)}")
+            self.current_segy_data = result.data
+            self.plot_seism.plot_seismogram(self.current_segy_data)
+        else:
+            self.ui.ErrorLW.addItem("Не удалось загрузить данные")
+            self.ui.ErrorLW.scrollToBottom()
+
+    def start_plot_fk(self):
+        if self.current_segy_data is None:
+            self.ui.ErrorLW.addItem("Сначала загрузите данные")
+            return
+        worker = FkForwardWorker(self.current_segy_data)
+        worker.signals.error.connect(self.on_worker_error)
+        worker.signals.message.connect(self.on_worker_message)
+        worker.signals.result.connect(self.on_fk_ready)
+        self.threadpool.start(worker)
+
+    def on_fk_ready(self, fk_spectrum):
+        if fk_spectrum is not None:
+            self.current_fk_spectrum = fk_spectrum
+            self.plot_seism.plot_fk(fk_spectrum)
+        else:
+            self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
+            self.ui.ErrorLW.scrollToBottom()
 
     def apply_style(self):
         style = """
