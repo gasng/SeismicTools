@@ -37,7 +37,33 @@ class PlotSeism:
         img.setImage(data)
         self.seismogram_pw.addItem(img)
         self.seismogram_pw.invertY(True)
-        self.seismogram_pw.setLabel('left', 'Время')
-        self.seismogram_pw.setLabel('bottom', 'Трасса')
+        self.seismogram_pw.setLabel('left', 'Время, с')
+        self.seismogram_pw.setLabel('bottom', 'Трасса, м')
         self.seismogram_pw.setTitle('Сейсмограмма')
-        self.log_message("✅ Сейсмограмма отображена")
+        self.log_message("Сейсмограмма отображена")
+
+    def plot_fk(self, data: np.ndarray):
+        self.fk_spectrum = data
+        self.fk_pw.clear()
+        img = pg.ImageItem()
+        cmap = pg.colormap.get('CET-L3')  # или 'CET-R3', 'viridis', 'plasma'
+        img.setColorMap(cmap)
+        img.setImage(data)
+        self.fk_pw.addItem(img)
+        self.fk_pw.invertY(True)
+        self.fk_pw.setLabel('left', 'Частота, 1/с')
+        self.fk_pw.setLabel('bottom', 'Пространственная частота, 1/м')
+        self.fk_pw.setTitle('FK - спектр')
+        self.log_message("FK - спектр отображен")
+
+    def plot_result(self, data: np.ndarray):
+        self.filtered_spectrum = data
+        self.result_pw.clear()
+        img = pg.ImageItem()
+        img.setImage(data)
+        self.result_pw.addItem(img)
+        self.result_pw.invertY(True)
+        self.result_pw.setLabel('left', 'Время, с')
+        self.result_pw.setLabel('bottom', 'Трасса, м')
+        self.result_pw.setTitle('Сейсмограмма после фильтрации')
+        self.log_message("Отфильтрованная сейсмограмма отображена")

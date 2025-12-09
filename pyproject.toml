@@ -11,6 +11,7 @@ pyside6 = "^6.10.1"
 numpy = "^2.3.5"
 segyio = "^1.9.13"
 pyqtgraph = "^0.14.0"
+scipy = "^1.16.3"
 
 
 [build-system]

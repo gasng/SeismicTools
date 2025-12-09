@@ -48,13 +48,13 @@ class FK_filter(QtWidgets.QMainWindow):
         if current_row >= 0:
             self.ui.SeismicDataLW.takeItem(current_row)
         else:
-            self.ui.ErrorLW.addItem("⚠️ Сначала выберите файл для удаления.")
+            self.ui.ErrorLW.addItem("Сначала выберите файл для удаления.")
             self.ui.ErrorLW.scrollToBottom()
 
     def start_reading(self):
         current_item = self.ui.SeismicDataLW.currentItem()
         if not current_item:
-            self.ui.ErrorLW.addItem("⚠️ Выберите файл для загрузки.")
+            self.ui.ErrorLW.addItem("Выберите файл для загрузки.")
             self.ui.ErrorLW.scrollToBottom()
             return
 
@@ -66,24 +66,24 @@ class FK_filter(QtWidgets.QMainWindow):
         self.threadpool.start(worker)
 
     def on_worker_message(self, msg: str):
-        self.ui.ErrorLW.addItem(f"ℹ️ {msg}")
+        self.ui.ErrorLW.addItem(f"{msg}")
         self.ui.ErrorLW.scrollToBottom()
 
     def on_worker_error(self, error: str):
-        self.ui.ErrorLW.addItem(f"❌ {error}")
+        self.ui.ErrorLW.addItem(f"{error}")
         self.ui.ErrorLW.scrollToBottom()
 
     def on_reader_result(self, result):
         if result is not None:
             current_item = self.ui.SeismicDataLW.currentItem()
             if not current_item:
-                self.ui.ErrorLW.addItem("⚠️ Выберите файл")
+                self.ui.ErrorLW.addItem("Выберите файл")
                 return
             try:
                 data = SegYReader.read(current_item.text()).data
                 self.plot_seism.plot_seismogram(data)
             except Exception as e:
-                self.ui.ErrorLW.addItem(f"❌ {str(e)}")
+                self.ui.ErrorLW.addItem(f"{str(e)}")
 
     def apply_style(self):
         style = """
