@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QFileDialog
 
 from seismictools.apps.FK_analysis.Calculate.Reader import SegYReader
 from seismictools.apps.FK_analysis.Controller.FkForwardWorker import FkForwardWorker
+from seismictools.apps.FK_analysis.Controller.FkInverseWorker import FkInverseWorker
 from seismictools.apps.FK_analysis.Controller.WorkerReader import WorkerReader
 from seismictools.apps.FK_analysis.UI.SettingsWidget_ui import  Ui_FK_Filtration
 from seismictools.apps.FK_analysis.View.PlotWidgets import PlotSeism
@@ -34,6 +35,7 @@ class FK_filter(QtWidgets.QMainWindow):
         )
 
         self.ui.FkBtn.clicked.connect(self.start_plot_fk)
+        self.ui.ResultBtn.clicked.connect(self.start_plot_ifk)
 
 
     def get_filepath(self):
@@ -101,6 +103,24 @@ class FK_filter(QtWidgets.QMainWindow):
         if fk_spectrum is not None:
             self.current_fk_spectrum = fk_spectrum
             self.plot_seism.plot_fk(fk_spectrum)
+        else:
+            self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
+            self.ui.ErrorLW.scrollToBottom()
+
+    def start_plot_ifk(self):
+        if self.current_fk_spectrum is None:
+            self.ui.ErrorLW.addItem("Сначала расчитайте FK-спектр")
+            return
+        worker = FkInverseWorker(self.current_fk_spectrum)
+        worker.signals.error.connect(self.on_worker_error)
+        worker.signals.message.connect(self.on_worker_message)
+        worker.signals.result.connect(self.on_ifk_ready)
+        self.threadpool.start(worker)
+
+    def on_ifk_ready(self, ifk_spectrum):
+        if ifk_spectrum is not None:
+            self.current_result_data = ifk_spectrum
+            self.plot_seism.plot_result(ifk_spectrum)
         else:
             self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
             self.ui.ErrorLW.scrollToBottom()
