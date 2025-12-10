@@ -53,6 +53,8 @@ class FK_filter(QtWidgets.QMainWindow):
 
     def delete_selected_file(self):
         current_row = self.ui.SeismicDataLW.currentRow()
+        self.ui.ErrorLW.addItem("Файл успешно удален.")
+        self.ui.ErrorLW.scrollToBottom()
         if current_row >= 0:
             self.ui.SeismicDataLW.takeItem(current_row)
         else:
