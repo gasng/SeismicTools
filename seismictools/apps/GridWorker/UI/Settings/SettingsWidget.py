@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GridWorkerWindow(object):
     def setupUi(self, GridWorkerWindow):
         GridWorkerWindow.setObjectName("GridWorkerWindow")
-        GridWorkerWindow.resize(718, 433)
+        GridWorkerWindow.resize(799, 520)
         GridWorkerWindow.setStyleSheet("")
         self.centralwidget = QtWidgets.QWidget(GridWorkerWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -28,7 +28,6 @@ class Ui_GridWorkerWindow(object):
         self.groupBox_load = QtWidgets.QGroupBox(self.splitter_3)
         font = QtGui.QFont()
         font.setBold(True)
-        font.setWeight(75)
         self.groupBox_load.setFont(font)
         self.groupBox_load.setStyleSheet("QPushButton {\n"
 "    background-color: rgb(195, 193, 255);\n"
@@ -78,7 +77,6 @@ class Ui_GridWorkerWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(False)
-        font.setWeight(50)
         self.pushButton_load.setFont(font)
         self.pushButton_load.setStyleSheet("")
         self.pushButton_load.setObjectName("pushButton_load")
@@ -86,14 +84,12 @@ class Ui_GridWorkerWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(False)
-        font.setWeight(50)
         self.pushButton_clear.setFont(font)
         self.pushButton_clear.setObjectName("pushButton_clear")
         self.verticalLayout.addWidget(self.splitter)
         self.groupBox_select = QtWidgets.QGroupBox(self.splitter_3)
         font = QtGui.QFont()
         font.setBold(True)
-        font.setWeight(75)
         self.groupBox_select.setFont(font)
         self.groupBox_select.setStyleSheet("QPushButton {\n"
 "    background-color: rgb(195, 193, 255);\n"
@@ -139,10 +135,15 @@ class Ui_GridWorkerWindow(object):
 "padding: 3 px;")
         self.listWidget_objects.setObjectName("listWidget_objects")
         self.verticalLayout_2.addWidget(self.splitter_5)
-        self.splitter_5.raise_()
-        self.pushButton_addObject.raise_()
-        self.label_2.raise_()
-        self.listWidget_objects.raise_()
+        self.pushButton_save = QtWidgets.QPushButton(self.splitter_3)
+        self.pushButton_save.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(192, 187, 255);\n"
+"    color: white;\n"
+"    border-radius: 8px;\n"
+"    padding: 8px;\n"
+"    font-size: 14px;\n"
+"}")
+        self.pushButton_save.setObjectName("pushButton_save")
         self.horizontalLayout.addWidget(self.splitter_3)
         self.label_map = QtWidgets.QGraphicsView(self.centralwidget)
         self.label_map.setStyleSheet("background-color: rgb(255, 255, 255);\n"
@@ -173,6 +174,7 @@ class Ui_GridWorkerWindow(object):
         self.groupBox_select.setTitle(_translate("GridWorkerWindow", "Выделение объектов"))
         self.pushButton_addObject.setText(_translate("GridWorkerWindow", "Добавить объект"))
         self.label_2.setText(_translate("GridWorkerWindow", "<html><head/><body><p align=\"center\">  ТЕКУЩИЕ ОБЪЕКТЫ:</p></body></html>"))
+        self.pushButton_save.setText(_translate("GridWorkerWindow", "Сохранить выделенные объекты"))
 
 
 if __name__ == "__main__":

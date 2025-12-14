@@ -1,12 +1,9 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QIODevice
+from PyQt5.QtWidgets import QApplication
+from UI.View.ViewWidget import ViewWidget
 
-from seismictools.apps.GridWorker.UI.Settings.SettingsWidget_ui import GridWorker
-
-def main():
+if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = GridWorker()
+    window = ViewWidget()
     window.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())

@@ -1,0 +1,46 @@
+from PyQt5 import QtWidgets
+from ..Settings.SettingsWidget import Ui_GridWorkerWindow
+from seismictools.apps.GridWorker.Calculate.Reader.GrdReader import read_grd_file
+import numpy as np
+class ViewWidget(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.ui = Ui_GridWorkerWindow()
+        self.ui.setupUi(self)
+        self.ui.pushButton_load.clicked.connect(self.load_file)
+        self.ui.pushButton_clear.clicked.connect(self.clear_file)
+
+        self.grid_data = None
+
+    def load_file(self):
+        """
+            Функция загрузки пути до файла через кнопку "Загрузить"
+        """
+        file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Выберите файл карты",
+            "",
+            "GRD Files (*.grd);;All Files (*)"
+        )
+        if file_path:
+            self.ui.lineEdit_filePath.setText(file_path)
+            try:
+                self.grid_data = read_grd_file(file_path)
+                print(f"Файл загружен. Размер массива: {self.grid_data.shape}")
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(
+                    self, "Ошибка", f"Не удалось загрузить файл:\n{str(e)}"
+                )
+                self.grid_data = None
+        else:
+            print("Файл не выбран")
+
+    def clear_file(self):
+        """
+             Функция очистки строки, отображающей путь до файла через кнопку "Очистить"
+        """
+        self.ui.lineEdit_filePath.clear()
+        self.grid_data = None
+        print("Данные очищены")
+
+
