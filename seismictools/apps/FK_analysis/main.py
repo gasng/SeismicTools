@@ -1,15 +1,16 @@
 import sys
-import numpy as np
-from PySide6 import QtWidgets
+from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QFileDialog
 
 from seismictools.apps.FK_analysis.Calculate.Reader import SegYReader
 from seismictools.apps.FK_analysis.Controller.FkForwardWorker import FkForwardWorker
 from seismictools.apps.FK_analysis.Controller.FkInverseWorker import FkInverseWorker
+from seismictools.apps.FK_analysis.Controller.PolygonMaskWorker import PolygonMaskWorker
 from seismictools.apps.FK_analysis.Controller.WorkerReader import WorkerReader
 from seismictools.apps.FK_analysis.UI.SettingsWidget_ui import  Ui_FK_Filtration
 from seismictools.apps.FK_analysis.View.PlotWidgets import PlotSeism
+from seismictools.apps.FK_analysis.View.PolygonSelector import PolygonSelector
 
 
 class FK_filter(QtWidgets.QMainWindow):
@@ -21,6 +22,7 @@ class FK_filter(QtWidgets.QMainWindow):
         self.current_segy_data = None # Это наши сохраненные прочитанные данные
         self.current_fk_spectrum = None # Это сохраненные данные FK-преобразования
         self.current_result_data = None  # "Это сохраненный результат обратного FK
+        self.fk_mask = None # Это маска фильтра
 
         self.ui.SeismicDataBtn.clicked.connect(self.get_filepath)
         self.ui.DeleteBtn.clicked.connect(self.delete_selected_file)
@@ -36,6 +38,12 @@ class FK_filter(QtWidgets.QMainWindow):
 
         self.ui.FkBtn.clicked.connect(self.start_plot_fk)
         self.ui.ResultBtn.clicked.connect(self.start_plot_ifk)
+
+        self.ui.SignalStartBtn.clicked.connect(self.start_selection)
+        self.ui.SignalEndBtn.clicked.connect(self.finish_selection)
+
+        # Подключаем клики по FK-графику
+        self.ui.FkPW.scene().sigMouseClicked.connect(self.on_fk_click)
 
 
     def get_filepath(self):
@@ -105,6 +113,9 @@ class FK_filter(QtWidgets.QMainWindow):
         if fk_spectrum is not None:
             self.current_fk_spectrum = fk_spectrum
             self.plot_seism.plot_fk(fk_spectrum)
+            self.polygon_selector = PolygonSelector(
+                plot_widget=self.ui.FkPW
+            )
         else:
             self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
             self.ui.ErrorLW.scrollToBottom()
@@ -113,7 +124,15 @@ class FK_filter(QtWidgets.QMainWindow):
         if self.current_fk_spectrum is None:
             self.ui.ErrorLW.addItem("Сначала расчитайте FK-спектр")
             return
-        worker = FkInverseWorker(self.current_fk_spectrum)
+        # Применяем маску ТОЛЬКО если она есть
+        if hasattr(self, 'fk_mask') and self.fk_mask is not None:
+            filtered = self.current_fk_spectrum * self.fk_mask
+            print(f"Маска применена: ненулевых пикселей = {self.fk_mask.sum()}")
+        else:
+            filtered = self.current_fk_spectrum
+            print("Маска не задана — используем полный спектр")
+
+        worker = FkInverseWorker(filtered)
         worker.signals.error.connect(self.on_worker_error)
         worker.signals.message.connect(self.on_worker_message)
         worker.signals.result.connect(self.on_ifk_ready)
@@ -126,6 +145,36 @@ class FK_filter(QtWidgets.QMainWindow):
         else:
             self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
             self.ui.ErrorLW.scrollToBottom()
+
+    def start_selection(self):
+        self.polygon_selector.start_selection()
+        self.ui.ErrorLW.addItem("Кликайте по FK-спектру")
+
+    def on_fk_click(self, event):
+        # Передаём клик напрямую селектору
+        if self.polygon_selector.is_selecting and event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self.polygon_selector.add_point(event.scenePos())
+
+    def finish_selection(self):
+        if self.polygon_selector.finish_selection():
+            points = self.polygon_selector.get_points()  # ← точки есть!
+            if self.current_fk_spectrum is not None:
+                worker = PolygonMaskWorker(points, self.current_fk_spectrum.shape)
+                worker.signals.result.connect(self.on_mask_ready)
+                worker.signals.error.connect(self.on_worker_error)
+                self.threadpool.start(worker)
+            else:
+                self.ui.ErrorLW.addItem("Нет FK-спектра")
+        else:
+            self.ui.ErrorLW.addItem("Минимум 3 точки")
+
+    def on_mask_ready(self, mask):
+        if mask is not None:
+            self.fk_mask = mask
+            print("Маска: min=", mask.min(), "max=", mask.max(), "sum=", mask.sum())
+            self.ui.ErrorLW.addItem("Маска полигона создана")
+        else:
+            self.ui.ErrorLW.addItem("Маска не создана")
 
     def apply_style(self):
         style = """

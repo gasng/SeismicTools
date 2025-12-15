@@ -51,6 +51,7 @@ class PlotSeism:
         img.setColorMap(cmap)
         img.setImage(data)
         self.fk_pw.addItem(img)
+        self.image_item = img
         self.fk_pw.setLabel('left', 'Частота')
         self.fk_pw.setLabel('bottom', 'Пространственная частота')
         self.fk_pw.setTitle('FK - спектр')
@@ -60,8 +61,9 @@ class PlotSeism:
         self.filtered_spectrum = data
         self.result_pw.clear()
         img = pg.ImageItem()
-        vmin, vmax = np.percentile(data, [1, 99])
-        img.setImage(data, levels=(vmin, vmax))
+        cmap = pg.colormap.get('CET-C1')  # или 'CET-R3', 'viridis', 'plasma'
+        img.setColorMap(cmap)
+        img.setImage(data)
         self.result_pw.addItem(img)
         self.result_pw.invertY(True)
         self.result_pw.setLabel('left', 'Время')
