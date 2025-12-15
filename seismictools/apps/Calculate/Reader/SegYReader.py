@@ -1,13 +1,13 @@
 import os
 import segyio
 
-class DataSeismic:
+class ReaderDataSeicmic:
     """
     Класс для чтения сейсмических данных из файла формата SEG-Y.
     Не хранит данные после чтения — только предоставляет метод для загрузки.
     """
     @staticmethod
-    def load_segy(file_path):
+    def read_segy(file_path):
         """
         Параметры: file_path (str) - путь к файлу SEG-Y
         Возвращает: numpy.ndarray - 3D-массив данных (iline, xline, time/depth)
