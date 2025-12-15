@@ -2,6 +2,15 @@ from PySide6.QtCore import QObject, Signal, QRunnable, Slot
 from seismictools.apps.Calculate.Reader.SegYReader import ReaderDataSeicmic
 
 class WorkerSignals(QObject):
+    """
+    finished - работа завершена
+    error - произошла ошибка (текстовое сообщение)
+    progress - прогресс выполнения в процентах [0-100]
+    message - какаое-то информационное сообщение
+    result - результат (отфильтрованные данные)
+
+    Это сигналы, нужны для обмена данными между фоновым потоком и основным потоком.
+    """
     finished = Signal()
     error = Signal(str)
     progress = Signal(int)
