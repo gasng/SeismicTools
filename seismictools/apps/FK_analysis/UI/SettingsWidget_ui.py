@@ -81,10 +81,15 @@ class Ui_FK_Filtration(object):
 
         self.verticalLayout_3.addWidget(self.FkBtn)
 
-        self.SignalBtn = QPushButton(self.SeismicStartGB)
-        self.SignalBtn.setObjectName(u"SignalBtn")
+        self.SignalStartBtn = QPushButton(self.SeismicStartGB)
+        self.SignalStartBtn.setObjectName(u"SignalStartBtn")
 
-        self.verticalLayout_3.addWidget(self.SignalBtn)
+        self.verticalLayout_3.addWidget(self.SignalStartBtn)
+
+        self.SignalEndBtn = QPushButton(self.SeismicStartGB)
+        self.SignalEndBtn.setObjectName(u"SignalEndBtn")
+
+        self.verticalLayout_3.addWidget(self.SignalEndBtn)
 
         self.ResultBtn = QPushButton(self.SeismicStartGB)
         self.ResultBtn.setObjectName(u"ResultBtn")
@@ -151,7 +156,8 @@ class Ui_FK_Filtration(object):
         self.SeismicStartGB.setTitle(QCoreApplication.translate("FK_Filtration", u"FK - \u0424\u0418\u041b\u042c\u0422\u0420\u0410\u0426\u0418\u042f", None))
         self.PlotSeismogramBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0441\u0435\u0439\u0441\u043c\u043e\u0433\u0440\u0430\u043c\u043c\u0443", None))
         self.FkBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c FK-\u0441\u043f\u0435\u043a\u0442\u0440", None))
-        self.SignalBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u0412\u044b\u0434\u0435\u043b\u0438\u0442\u044c \u0446\u0435\u043b\u0435\u0432\u043e\u0439 \u0441\u0438\u0433\u043d\u0430\u043b", None))
+        self.SignalStartBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041d\u0430\u0447\u0430\u0442\u044c \u0432\u044b\u0434\u0435\u043b\u0435\u043d\u0438\u0435 \u0441\u0438\u0433\u043d\u0430\u043b\u0430", None))
+        self.SignalEndBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u0417\u0430\u043a\u043e\u043d\u0447\u0438\u0442\u044c \u0432\u044b\u0434\u0435\u043b\u0435\u043d\u0438\u0435 \u0441\u0438\u0433\u043d\u0430\u043b\u0430", None))
         self.ResultBtn.setText(QCoreApplication.translate("FK_Filtration", u"\u041e\u0431\u0440\u0430\u0442\u043d\u043e\u0435 FK-\u043f\u0440\u0435\u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0435", None))
         self.ErrorGB.setTitle(QCoreApplication.translate("FK_Filtration", u"\u041e\u043a\u043d\u043e \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u044f", None))
         self.groupBox.setTitle(QCoreApplication.translate("FK_Filtration", u"Seismic Filtering (FK)", None))

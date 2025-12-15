@@ -33,12 +33,13 @@ class PlotSeism:
     def plot_seismogram(self, data: np.ndarray):
         self.current_data = data
         self.seismogram_pw.clear()
+        vmin, vmax = np.percentile(data, [1, 99])
         img = pg.ImageItem()
-        img.setImage(data)
+        img.setImage(data, levels=(vmin, vmax))
         self.seismogram_pw.addItem(img)
         self.seismogram_pw.invertY(True)
-        self.seismogram_pw.setLabel('left', 'Время, с')
-        self.seismogram_pw.setLabel('bottom', 'Трасса, м')
+        self.seismogram_pw.setLabel('left', 'Время')
+        self.seismogram_pw.setLabel('bottom', 'Трасса')
         self.seismogram_pw.setTitle('Сейсмограмма')
         self.log_message("Сейсмограмма отображена")
 
@@ -46,13 +47,12 @@ class PlotSeism:
         self.fk_spectrum = data
         self.fk_pw.clear()
         img = pg.ImageItem()
-        cmap = pg.colormap.get('CET-L3')  # или 'CET-R3', 'viridis', 'plasma'
+        cmap = pg.colormap.get('CET-C1')  # или 'CET-R3', 'viridis', 'plasma'
         img.setColorMap(cmap)
         img.setImage(data)
         self.fk_pw.addItem(img)
-        self.fk_pw.invertY(True)
-        self.fk_pw.setLabel('left', 'Частота, 1/с')
-        self.fk_pw.setLabel('bottom', 'Пространственная частота, 1/м')
+        self.fk_pw.setLabel('left', 'Частота')
+        self.fk_pw.setLabel('bottom', 'Пространственная частота')
         self.fk_pw.setTitle('FK - спектр')
         self.log_message("FK - спектр отображен")
 
@@ -60,10 +60,11 @@ class PlotSeism:
         self.filtered_spectrum = data
         self.result_pw.clear()
         img = pg.ImageItem()
-        img.setImage(data)
+        vmin, vmax = np.percentile(data, [1, 99])
+        img.setImage(data, levels=(vmin, vmax))
         self.result_pw.addItem(img)
         self.result_pw.invertY(True)
-        self.result_pw.setLabel('left', 'Время, с')
-        self.result_pw.setLabel('bottom', 'Трасса, м')
+        self.result_pw.setLabel('left', 'Время')
+        self.result_pw.setLabel('bottom', 'Трасса')
         self.result_pw.setTitle('Сейсмограмма после фильтрации')
         self.log_message("Отфильтрованная сейсмограмма отображена")

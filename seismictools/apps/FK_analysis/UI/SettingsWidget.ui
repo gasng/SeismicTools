@@ -84,9 +84,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="SignalBtn">
+           <widget class="QPushButton" name="SignalStartBtn">
             <property name="text">
-             <string>Выделить целевой сигнал</string>
+             <string>Начать выделение сигнала</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="SignalEndBtn">
+            <property name="text">
+             <string>Закончить выделение сигнала</string>
             </property>
            </widget>
           </item>
