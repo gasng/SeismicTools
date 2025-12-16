@@ -22,6 +22,6 @@ def read_grd_file(file_path):
 
     # Преобразуем полученный список в numpy массив и изменим форму на (n_rows, n_cols)
     data_array = np.array(data).reshape(n_rows, n_cols)
-    data_array = data_array / np.max(data_array)
+    data_array[np.where(data_array > 1e5)] = np.nan
     return data_array
 
