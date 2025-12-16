@@ -1,12 +1,18 @@
 import pyqtgraph as pg
+import numpy as np
 
 class PolygonSelector:
-    def __init__(self, plot_widget: pg.PlotWidget):
+    def __init__(self, plot_widget: pg.PlotWidget, data_shape: tuple, f_nyquist: float, k_nyquist: float):
         self.plot_widget = plot_widget
+        self.data_shape = data_shape
+        self.f_nyquist = f_nyquist
+        self.k_nyquist = k_nyquist
         self.points = []  # [(x_view, y_view), ...] ← float, координаты графика
         self.scatter = None
         self.polygon_line = None
         self.is_selecting = False
+        self.image_item = None
+
 
     def start_selection(self):
         self.clear()
@@ -27,12 +33,28 @@ class PolygonSelector:
         self.points = []
 
     def add_point(self, scene_pos):
-        # Преобразуем сцену → координаты графика (float)
         view_pos = self.plot_widget.plotItem.vb.mapSceneToView(scene_pos)
-        x_view = view_pos.x()
-        y_view = view_pos.y()
 
-        self.points.append((x_view, y_view))
+        # Если есть ImageItem — используем его для конвертации
+        if self.image_item:
+            img_pos = self.image_item.mapFromView(view_pos)
+            x_phys = img_pos.x()
+            y_phys = img_pos.y()
+
+            # Конвертируем в индексы массива
+            h, w = self.data_shape
+            x_idx = int(np.clip((x_phys + self.k_nyquist) / (2 * self.k_nyquist) * w, 0, w - 1))
+            y_idx = int(np.clip((y_phys + self.f_nyquist) / (2 * self.f_nyquist) * h, 0, h - 1))
+            self.points.append((x_idx, y_idx))
+        else:
+            # Без image_item — просто конвертируем координаты графика в индексы
+            x_view = view_pos.x()
+            y_view = view_pos.y()
+            h, w = self.data_shape
+            x_idx = int(np.clip(x_view, 0, w - 1))
+            y_idx = int(np.clip(y_view, 0, h - 1))
+            self.points.append((x_idx, y_idx))
+
         self._update_visuals()
 
     def _update_visuals(self):

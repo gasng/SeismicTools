@@ -30,43 +30,72 @@ class PlotSeism:
     def log_message(self, msg: str):
         self.error_lw.addItem(msg)
 
-    def plot_seismogram(self, data: np.ndarray):
+    def plot_seismogram(self, data: np.ndarray, dt: float, dx: float):
+        """
+        :param  массив [трассы, время] — как из SegYReader (shape = (nx, nt))
+        :param dt: шаг по времени (сек)
+        :param dx: шаг по пространству (м)
+        """
         self.current_data = data
         self.seismogram_pw.clear()
         vmin, vmax = np.percentile(data, [1, 99])
         img = pg.ImageItem()
         img.setImage(data, levels=(vmin, vmax))
+        img.setRect((0, 0, dx * data.shape[1], dt * data.shape[0]))
         self.seismogram_pw.addItem(img)
         self.seismogram_pw.invertY(True)
-        self.seismogram_pw.setLabel('left', 'Время')
-        self.seismogram_pw.setLabel('bottom', 'Трасса')
+        self.seismogram_pw.setLabel('left', 'Время', units='с')
+        self.seismogram_pw.setLabel('bottom', 'Координата приёмника', units='м')
         self.seismogram_pw.setTitle('Сейсмограмма')
         self.log_message("Сейсмограмма отображена")
 
-    def plot_fk(self, data: np.ndarray):
+    def plot_fk(self, data: np.ndarray, dt: float, dx: float):
         self.fk_spectrum = data
         self.fk_pw.clear()
+        amplitude = np.abs(data)
         img = pg.ImageItem()
-        cmap = pg.colormap.get('CET-C1')  # или 'CET-R3', 'viridis', 'plasma'
+        cmap = pg.colormap.get('CET-C3')
         img.setColorMap(cmap)
-        img.setImage(data)
+        img.setImage(amplitude)
         self.fk_pw.addItem(img)
         self.image_item = img
-        self.fk_pw.setLabel('left', 'Частота')
-        self.fk_pw.setLabel('bottom', 'Пространственная частота')
+
+        h, w = data.shape
+        f_nyquist = 1 / (2 * dt)
+        k_nyquist = 1 / (2 * dx)
+        img.setRect((-k_nyquist, -f_nyquist, 2 * k_nyquist, 2 * f_nyquist))
+
+        # Ось Y: Частота
+        y_ticks = [
+            (-h // 2, f"{-f_nyquist:.1f}"),
+            (0, "0"),
+            (h // 2, f"{f_nyquist:.1f}")
+        ]
+        self.fk_pw.getAxis('left').setTicks([y_ticks])
+        self.fk_pw.setLabel('left', 'Частота (Гц)')
+
+        # Ось X: Пространственная частота
+        x_ticks = [
+            (-w // 2, f"{-k_nyquist:.2f}"),
+            (0, "0"),
+            (w // 2, f"{k_nyquist:.2f}")
+        ]
+        self.fk_pw.getAxis('bottom').setTicks([x_ticks])
+        self.fk_pw.setLabel('bottom', 'Пространственная частота (1/м)')
+
         self.fk_pw.setTitle('FK - спектр')
         self.log_message("FK - спектр отображен")
 
-    def plot_result(self, data: np.ndarray):
+    def plot_result(self, data: np.ndarray, dt: float, dx: float):
         self.filtered_spectrum = data
         self.result_pw.clear()
+        vmin, vmax = np.percentile(data, [1, 99])
         img = pg.ImageItem()
-        cmap = pg.colormap.get('CET-C1')  # или 'CET-R3', 'viridis', 'plasma'
-        img.setColorMap(cmap)
-        img.setImage(data)
+        img.setImage(data, levels=(vmin, vmax))
+        img.setRect((0, 0, dx * data.shape[1], dt * data.shape[0]))
         self.result_pw.addItem(img)
         self.result_pw.invertY(True)
-        self.result_pw.setLabel('left', 'Время')
-        self.result_pw.setLabel('bottom', 'Трасса')
+        self.result_pw.setLabel('left', 'Время, mc')
+        self.result_pw.setLabel('bottom', 'Координата приемника, м')
         self.result_pw.setTitle('Сейсмограмма после фильтрации')
         self.log_message("Отфильтрованная сейсмограмма отображена")

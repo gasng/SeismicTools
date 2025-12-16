@@ -2,7 +2,7 @@ from PySide6.QtCore import QRunnable, Slot, QObject, Signal
 import numpy as np
 
 class PolygonMaskSignals(QObject):
-    result = Signal(object)  # np.ndarray (bool)
+    result = Signal(object)
     error = Signal(str)
 
 class PolygonMaskWorker(QRunnable):

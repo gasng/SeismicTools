@@ -23,6 +23,8 @@ class FK_filter(QtWidgets.QMainWindow):
         self.current_fk_spectrum = None # Это сохраненные данные FK-преобразования
         self.current_result_data = None  # "Это сохраненный результат обратного FK
         self.fk_mask = None # Это маска фильтра
+        self.dt = None # Частота дискретизации t
+        self.dx = None # Частота дискретизации x
 
         self.ui.SeismicDataBtn.clicked.connect(self.get_filepath)
         self.ui.DeleteBtn.clicked.connect(self.delete_selected_file)
@@ -93,28 +95,35 @@ class FK_filter(QtWidgets.QMainWindow):
 
     def on_reader_result(self, result):
         if result is not None:
-            self.current_segy_data = result.data
-            self.plot_seism.plot_seismogram(self.current_segy_data)
+            self.current_segy_data = result
+            self.dt = result.dt
+            self.dx = result.dx
+            self.plot_seism.plot_seismogram(result.data, dt=self.dt, dx=self.dx)
         else:
             self.ui.ErrorLW.addItem("Не удалось загрузить данные")
             self.ui.ErrorLW.scrollToBottom()
 
     def start_plot_fk(self):
+        print(">>> start_plot_fk вызвана")
         if self.current_segy_data is None:
             self.ui.ErrorLW.addItem("Сначала загрузите данные")
             return
-        worker = FkForwardWorker(self.current_segy_data)
+        worker = FkForwardWorker(self.current_segy_data.data)
         worker.signals.error.connect(self.on_worker_error)
         worker.signals.message.connect(self.on_worker_message)
         worker.signals.result.connect(self.on_fk_ready)
         self.threadpool.start(worker)
+        print(">>> Воркер FK запущен")
 
     def on_fk_ready(self, fk_spectrum):
         if fk_spectrum is not None:
             self.current_fk_spectrum = fk_spectrum
-            self.plot_seism.plot_fk(fk_spectrum)
+            self.plot_seism.plot_fk(self.current_fk_spectrum, dt=self.dt, dx=self.dx)
             self.polygon_selector = PolygonSelector(
-                plot_widget=self.ui.FkPW
+                plot_widget=self.ui.FkPW,
+                data_shape=self.current_fk_spectrum.shape,
+                f_nyquist=1 / (2 * self.dt),
+                k_nyquist=1 / (2 * self.dx)
             )
         else:
             self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
@@ -141,7 +150,7 @@ class FK_filter(QtWidgets.QMainWindow):
     def on_ifk_ready(self, ifk_spectrum):
         if ifk_spectrum is not None:
             self.current_result_data = ifk_spectrum
-            self.plot_seism.plot_result(ifk_spectrum)
+            self.plot_seism.plot_result(ifk_spectrum, dt=self.dt, dx=self.dx)
         else:
             self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
             self.ui.ErrorLW.scrollToBottom()
@@ -171,7 +180,6 @@ class FK_filter(QtWidgets.QMainWindow):
     def on_mask_ready(self, mask):
         if mask is not None:
             self.fk_mask = mask
-            print("Маска: min=", mask.min(), "max=", mask.max(), "sum=", mask.sum())
             self.ui.ErrorLW.addItem("Маска полигона создана")
         else:
             self.ui.ErrorLW.addItem("Маска не создана")

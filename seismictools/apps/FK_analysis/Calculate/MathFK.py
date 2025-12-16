@@ -5,7 +5,7 @@ from scipy.fft import fft2, ifft2, fftshift, ifftshift
 def forward_fk(data: np.ndarray) -> np.ndarray:
     """
     Выполняет 2D FFT: время в частоту, трассы в волновое число (k).
-    Возвращает FK-спектр с центрированной нулевой частотой.
+    Возвращает FK-спектр.
 
     :param data: Массив [трассы, время]
     :return: FK-спектр

@@ -5,6 +5,8 @@ from dataclasses import dataclass
 @dataclass
 class SegYData:
     data: np.ndarray
+    dt: float
+    dx: float
 
 
 class SegYReader:
@@ -12,4 +14,23 @@ class SegYReader:
     def read(filepath):
         seg_file = sio.open(filepath, ignore_geometry=True)
         gather = np.array([seg_file.trace[i] for i in range(seg_file.tracecount)])
-        return SegYData(data=gather)
+
+        dt_microsec = seg_file.bin[sio.BinField.Interval]
+        dt_sec = dt_microsec / 1e6
+        if dt_sec == 0:
+            dt_sec = 0.001
+
+        # Читаем dx (расстояние между трассами)
+        if len(seg_file.header) > 0:
+            x0 = seg_file.header[0][sio.TraceField.GroupX]
+            if len(seg_file.header) > 1:
+                x1 = seg_file.header[1][sio.TraceField.GroupX]
+                dx = abs(x1 - x0)
+            else:
+                dx = 1.0
+        else:
+            dx = 1.0
+
+        if dx == 0:
+            dx = 1.0
+        return SegYData(data=gather, dt=dt_sec, dx=dx)
