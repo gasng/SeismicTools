@@ -20,6 +20,8 @@ class PlotSeism:
         self.fk_spectrum = None
         self.filtered_spectrum = None
         self.result_data = None
+        self.fk_freq_axis = None
+        self.fk_kx_axis = None
 
     def _setup_plots(self):
         """Настройка общего стиля графиков"""
@@ -52,38 +54,33 @@ class PlotSeism:
     def plot_fk(self, data: np.ndarray, dt: float, dx: float):
         self.fk_spectrum = data
         self.fk_pw.clear()
-        amplitude = np.abs(data)
+
+        amplitude = np.log(np.abs(data) + 1e-10)
+
+        nt, nx = data.shape
+        freqs = np.fft.fftshift(np.fft.fftfreq(nt, dt))
+        kx = np.fft.fftshift(np.fft.fftfreq(nx, dx))
+
+        # Сохраняем для маски
+        self.fk_freq_axis = freqs
+        self.fk_kx_axis = kx
+
         img = pg.ImageItem()
         cmap = pg.colormap.get('CET-C3')
-        img.setColorMap(cmap)
-        img.setImage(amplitude)
+        img.setLookupTable(cmap.getLookupTable())
+
+        vmin, vmax = np.percentile(amplitude, [1, 99])
+        img.setImage(amplitude, levels=(vmin, vmax))
+
+        # 🔑 Правильный setRect
+        x0, x1 = kx[0], kx[-1]
+        y0, y1 = freqs[0], freqs[-1]
+        img.setRect((x0, y0, x1 - x0, y1 - y0))
+
         self.fk_pw.addItem(img)
-        self.image_item = img
-
-        h, w = data.shape
-        f_nyquist = 1 / (2 * dt)
-        k_nyquist = 1 / (2 * dx)
-        img.setRect((-k_nyquist, -f_nyquist, 2 * k_nyquist, 2 * f_nyquist))
-
-        # Ось Y: Частота
-        y_ticks = [
-            (-h // 2, f"{-f_nyquist:.1f}"),
-            (0, "0"),
-            (h // 2, f"{f_nyquist:.1f}")
-        ]
-        self.fk_pw.getAxis('left').setTicks([y_ticks])
-        self.fk_pw.setLabel('left', 'Частота (Гц)')
-
-        # Ось X: Пространственная частота
-        x_ticks = [
-            (-w // 2, f"{-k_nyquist:.2f}"),
-            (0, "0"),
-            (w // 2, f"{k_nyquist:.2f}")
-        ]
-        self.fk_pw.getAxis('bottom').setTicks([x_ticks])
-        self.fk_pw.setLabel('bottom', 'Пространственная частота (1/м)')
-
-        self.fk_pw.setTitle('FK - спектр')
+        self.fk_pw.setLabel('left', 'Частота', units='Гц')
+        self.fk_pw.setLabel('bottom', 'Волновое число', units='1/м')
+        self.fk_pw.setTitle('FK-спектр')
         self.log_message("FK - спектр отображен")
 
     def plot_result(self, data: np.ndarray, dt: float, dx: float):

@@ -6,43 +6,43 @@ class PolygonMaskSignals(QObject):
     error = Signal(str)
 
 class PolygonMaskWorker(QRunnable):
-    def __init__(self, polygon_points: list, shape: tuple):
-        """
-        :param polygon_points: список [(x, y), ...] в координатах графика
-        :param shape: (h, w) — размер FK-спектра
-        """
+    def __init__(self, polygon_points: list, shape: tuple, kx_axis: np.ndarray, freq_axis: np.ndarray):
         super().__init__()
-        self.polygon_points = polygon_points
+        self.polygon_points = polygon_points  # [(kx, f), ...]
         self.shape = shape
+        self.kx_axis = kx_axis
+        self.freq_axis = freq_axis
         self.signals = PolygonMaskSignals()
 
     @Slot()
     def run(self):
         try:
-            mask = self._create_mask(self.polygon_points, self.shape)
+            mask = self._create_mask(self.polygon_points, self.shape, self.kx_axis, self.freq_axis)
             self.signals.result.emit(mask)
         except Exception as e:
             self.signals.error.emit(str(e))
             self.signals.result.emit(None)
 
-    def _create_mask(self, points, shape):
+    def _create_mask(self, points, shape, kx_axis, freq_axis):
         h, w = shape
-        mask = np.zeros((h, w), dtype=bool)
+        KX, FREQ = np.meshgrid(kx_axis, freq_axis)  # (h, w)
+        x_flat = KX.ravel()
+        y_flat = FREQ.ravel()
 
-        # Преобразуем точки в целочисленные индексы
-        poly_x = []
-        poly_y = []
-        for (x, y) in points:
-            xi = int(np.clip(x, 0, w - 1))
-            yi = int(np.clip(y, 0, h - 1))
-            poly_x.append(xi)
-            poly_y.append(yi)
+        poly = np.array(points)
+        n = len(poly)
+        inside = np.zeros_like(x_flat, dtype=bool)
 
-        # Ray casting
-        for y in range(h):
-            for x in range(w):
-                mask[y, x] = self._point_in_polygon(x, y, poly_x, poly_y)
-        return mask
+        j = n - 1
+        for i in range(n):
+            xi, yi = poly[i]
+            xj, yj = poly[j]
+            intersect = ((yi > y_flat) != (yj > y_flat)) & \
+                        (x_flat < (xj - xi) * (y_flat - yi) / (yj - yi) + xi)
+            inside ^= intersect
+            j = i
+
+        return inside.reshape(h, w)
 
     def _point_in_polygon(self, x, y, poly_x, poly_y):
         n = len(poly_x)

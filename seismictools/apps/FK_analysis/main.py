@@ -119,12 +119,7 @@ class FK_filter(QtWidgets.QMainWindow):
         if fk_spectrum is not None:
             self.current_fk_spectrum = fk_spectrum
             self.plot_seism.plot_fk(self.current_fk_spectrum, dt=self.dt, dx=self.dx)
-            self.polygon_selector = PolygonSelector(
-                plot_widget=self.ui.FkPW,
-                data_shape=self.current_fk_spectrum.shape,
-                f_nyquist=1 / (2 * self.dt),
-                k_nyquist=1 / (2 * self.dx)
-            )
+            self.polygon_selector = PolygonSelector(plot_widget=self.ui.FkPW)
         else:
             self.ui.ErrorLW.addItem("Не удалось вычислить и отрисовать")
             self.ui.ErrorLW.scrollToBottom()
@@ -168,7 +163,12 @@ class FK_filter(QtWidgets.QMainWindow):
         if self.polygon_selector.finish_selection():
             points = self.polygon_selector.get_points()  # ← точки есть!
             if self.current_fk_spectrum is not None:
-                worker = PolygonMaskWorker(points, self.current_fk_spectrum.shape)
+                worker = PolygonMaskWorker(
+                    points,
+                    self.current_fk_spectrum.shape,
+                    self.plot_seism.fk_kx_axis,
+                    self.plot_seism.fk_freq_axis
+                )
                 worker.signals.result.connect(self.on_mask_ready)
                 worker.signals.error.connect(self.on_worker_error)
                 self.threadpool.start(worker)
