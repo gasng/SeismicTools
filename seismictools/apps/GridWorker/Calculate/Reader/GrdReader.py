@@ -2,7 +2,7 @@ import numpy as np
 
 def read_grd_file(file_path):
     """
-    Функция чтениz .grd файла и преобразование его в numpy массив.
+    Функция чтения .grd файла и преобразование его в numpy массив.
     """
     with open(file_path, 'r') as file:
         lines = file.readlines()

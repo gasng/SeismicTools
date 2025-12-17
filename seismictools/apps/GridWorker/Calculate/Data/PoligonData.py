@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
-import pyqtgraph as pg
 from PyQt5 import QtCore
+import pyqtgraph as pg
 
 class PointManager(QObject):
     def __init__(self, plot_widget):
@@ -11,10 +11,11 @@ class PointManager(QObject):
         self.line_plot = None  # Линия между точками
         self.is_polygon_closed = False  # Флаг замкнутого полигона
 
-        # Подключаем обработчики
         self.plot_widget.scene().sigMouseClicked.connect(self._on_click)
 
+    # Сигналы
     status_message = pyqtSignal(str)
+    polygon_completed = pyqtSignal()
 
     def _on_click(self, event):
         """
@@ -43,13 +44,13 @@ class PointManager(QObject):
             # Одиночный клик - добавить или удалить точку
             image_pos = view_box.mapSceneToView(pos)
             x, y = image_pos.x(), image_pos.y()
-            point_index = self._find_closeist_point(pos, view_box, threshold=10)
+            point_index = self._find_closest_point(pos, view_box, threshold=10)
             if point_index is not None:
                 self.remove_point(point_index)
             else:
                 self.add_point(x, y)
 
-    def _find_closeist_point(self, click_pos, view_box, threshold=10):
+    def _find_closest_point(self, click_pos, view_box, threshold=10):
         """
             Функция поиска ближайшей точки
         """
@@ -92,7 +93,7 @@ class PointManager(QObject):
         self.is_polygon_closed = True
         self._update_plot()
         self.status_message.emit(f"Полигон замкнут. Вершин: {len(self.points)}")
-
+        self.polygon_completed.emit()
 
     def _update_plot(self):
         """
@@ -143,7 +144,7 @@ class PointManager(QObject):
 
     def clear_points(self):
         """
-            Фунция полная очистки
+            Фунция полной очистки
         """
         self.points = []
         self.is_polygon_closed = False
@@ -151,7 +152,7 @@ class PointManager(QObject):
 
     def get_polygon(self):
         """
-        Фунция возвращает координаты полигона или None
+            Фунция возвращает координаты полигона или None
         """
         if self.is_polygon_closed and len(self.points) >= 3:
             return self.points.copy()
