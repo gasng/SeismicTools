@@ -8,7 +8,7 @@ class PolygonMaskSignals(QObject):
 class PolygonMaskWorker(QRunnable):
     def __init__(self, polygon_points: list, shape: tuple, kx_axis: np.ndarray, freq_axis: np.ndarray):
         super().__init__()
-        self.polygon_points = polygon_points  # [(kx, f), ...]
+        self.polygon_points = polygon_points
         self.shape = shape
         self.kx_axis = kx_axis
         self.freq_axis = freq_axis
@@ -25,7 +25,7 @@ class PolygonMaskWorker(QRunnable):
 
     def _create_mask(self, points, shape, kx_axis, freq_axis):
         h, w = shape
-        KX, FREQ = np.meshgrid(kx_axis, freq_axis)  # (h, w)
+        KX, FREQ = np.meshgrid(kx_axis, freq_axis)
         x_flat = KX.ravel()
         y_flat = FREQ.ravel()
 

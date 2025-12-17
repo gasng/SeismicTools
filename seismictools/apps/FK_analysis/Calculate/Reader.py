@@ -12,6 +12,12 @@ class SegYData:
 class SegYReader:
     @staticmethod
     def read(filepath):
+        """
+        Метод для чтения segy файлов
+
+        :param filepath: Путь до файла
+        :return: Объект класса SegYData. Внутри - трассы и шаги дискретизации по x и t.
+        """
         seg_file = sio.open(filepath, ignore_geometry=True)
         gather = np.array([seg_file.trace[i] for i in range(seg_file.tracecount)])
 

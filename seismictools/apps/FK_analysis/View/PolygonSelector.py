@@ -1,5 +1,4 @@
 import pyqtgraph as pg
-import numpy as np
 
 class PolygonSelector:
     def __init__(self, plot_widget: pg.PlotWidget):

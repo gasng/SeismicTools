@@ -19,6 +19,13 @@ def forward_fk(data: np.ndarray) -> np.ndarray:
     return fk_shifted
 
 def inverse_fk(fk_spectrum: np.ndarray):
+    """
+    Выполняет 2D IFFT: частоту во время, волновое число (k) в трассы.
+    Возвращает изначальный сигнал.
+
+    :param fk_spectrum: Массив [значение k, значение частоты]
+    :return: Изначальный сигнал
+    """
 
     if fk_spectrum.ndim != 2:
         raise ValueError("FK-спектр должен быть 2D")

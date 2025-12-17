@@ -34,9 +34,11 @@ class PlotSeism:
 
     def plot_seismogram(self, data: np.ndarray, dt: float, dx: float):
         """
-        :param  массив [трассы, время] — как из SegYReader (shape = (nx, nt))
-        :param dt: шаг по времени (сек)
-        :param dx: шаг по пространству (м)
+        Функция отрисовки сейсмограммы
+
+        :param data:  массив [трассы, время]
+        :param dt: шаг дискретизации по времени (сек)
+        :param dx: шаг дискретизации по пространству (м)
         """
         self.current_data = data
         self.seismogram_pw.clear()
@@ -52,6 +54,13 @@ class PlotSeism:
         self.log_message("Сейсмограмма отображена")
 
     def plot_fk(self, data: np.ndarray, dt: float, dx: float):
+        """
+        Функция отрисовки FK-спектра сейсмограммы.
+
+        :param data: Массив [пространственная частота, частота]
+        :param dt: шаг дискретизации по времени (сек)
+        :param dx: шаг дискретизации по пространству (м)
+        """
         self.fk_spectrum = data
         self.fk_pw.clear()
 
@@ -72,7 +81,6 @@ class PlotSeism:
         vmin, vmax = np.percentile(amplitude, [1, 99])
         img.setImage(amplitude, levels=(vmin, vmax))
 
-        # 🔑 Правильный setRect
         x0, x1 = kx[0], kx[-1]
         y0, y1 = freqs[0], freqs[-1]
         img.setRect((x0, y0, x1 - x0, y1 - y0))
@@ -84,6 +92,13 @@ class PlotSeism:
         self.log_message("FK - спектр отображен")
 
     def plot_result(self, data: np.ndarray, dt: float, dx: float):
+        """
+        Функция отрисовки отфильтрованной сейсмограммы
+
+        :param data:  массив [трассы, время]
+        :param dt: шаг дискретизации по времени (сек)
+        :param dx: шаг дискретизации по пространству (м)
+         """
         self.filtered_spectrum = data
         self.result_pw.clear()
         vmin, vmax = np.percentile(data, [1, 99])
@@ -92,7 +107,7 @@ class PlotSeism:
         img.setRect((0, 0, dx * data.shape[1], dt * data.shape[0]))
         self.result_pw.addItem(img)
         self.result_pw.invertY(True)
-        self.result_pw.setLabel('left', 'Время, mc')
-        self.result_pw.setLabel('bottom', 'Координата приемника, м')
+        self.result_pw.setLabel('left', 'Время', units='с')
+        self.result_pw.setLabel('bottom', 'Координата приемника', units='м')
         self.result_pw.setTitle('Сейсмограмма после фильтрации')
         self.log_message("Отфильтрованная сейсмограмма отображена")
