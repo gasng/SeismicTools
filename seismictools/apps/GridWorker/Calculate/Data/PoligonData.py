@@ -11,6 +11,10 @@ class PointManager(QObject):
         self.line_plot = None  # Линия между точками
         self.is_polygon_closed = False  # Флаг замкнутого полигона
 
+        # Для хранения сохранённых полигонов
+        self.saved_polygons = []  # Список полигонов: [[(x1,y1), (x2,y2), ...], ...]
+        self.saved_polygon_items = []  # Список отображаемых линий на карте
+
         self.plot_widget.scene().sigMouseClicked.connect(self._on_click)
 
     # Сигналы
@@ -24,10 +28,9 @@ class PointManager(QObject):
         if event.button() != QtCore.Qt.LeftButton:
             return
 
-        # Если полигон уже замкнут — сброс
+        # Если полигон уже замкнут — сббрасываем только текущий
         if self.is_polygon_closed:
-            self.clear_points()
-            self.is_polygon_closed = False
+            self.clear_current_polygon()
 
         pos = event.scenePos()
         if not self.plot_widget.viewRect().contains(pos):
@@ -131,6 +134,29 @@ class PointManager(QObject):
         else:
             self.line_plot.setData(x=x, y=y)
 
+    def add_saved_polygon(self, polygon: list, color=(0, 255, 0)):
+        """
+        Функция добавляет сохранённый полигон на карту
+
+        """
+        if len(polygon) < 2:
+            return
+
+        # Замыкаем полигон
+        x = [p[0] for p in polygon] + [polygon[0][0]]
+        y = [p[1] for p in polygon] + [polygon[0][1]]
+
+        # Создаём линию
+        line = pg.PlotDataItem(
+            x=x, y=y,
+            pen=pg.mkPen(color=color, width=2)
+        )
+
+        # Сохраняем данные и отображение
+        self.saved_polygons.append(polygon)
+        self.saved_polygon_items.append(line)
+        self.plot_widget.addItem(line)
+
     def _clear_plot_items(self):
         """
             Функция удаления всех графических элементов
@@ -142,9 +168,20 @@ class PointManager(QObject):
             self.plot_widget.removeItem(self.line_plot)
             self.line_plot = None
 
-    def clear_points(self):
+    def clear_all(self):
         """
             Фунция полной очистки
+        """
+        self.clear_current_polygon()
+        # Удаляем все сохранённые полигоны с карты
+        for item in self.saved_polygon_items:
+            self.plot_widget.removeItem(item)
+        self.saved_polygons = []
+        self.saved_polygon_items = []
+
+    def clear_current_polygon(self):
+        """
+            Функция очищает только текущий (активный) полигон, сохранённые остаются
         """
         self.points = []
         self.is_polygon_closed = False

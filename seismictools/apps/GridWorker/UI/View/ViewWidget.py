@@ -4,7 +4,7 @@ from seismictools.apps.GridWorker.Calculate.Reader.GrdReader import read_grd_fil
 from seismictools.apps.GridWorker.Calculate.Data.PoligonData import PointManager
 from seismictools.apps.GridWorker.Calculate.Data.GridData import MapRenderer
 from seismictools.apps.GridWorker.Calculate.Data.ObjectList import ObjectListManager
-import numpy as np
+from seismictools.apps.GridWorker.Controller.WorkerSaver import WorkerSaver
 import pyqtgraph as pg
 
 pg.setConfigOption('imageAxisOrder', 'row-major')
@@ -23,10 +23,11 @@ class ViewWidget(QtWidgets.QMainWindow):
         self.ui.label_map.deleteLater()
         self.ui.label_map = self.plot_widget
 
-        # Подключение кнопок "Загрузкить", "Очистить" и "Добавить объект"
+        # Подключение кнопок "Загрузить", "Очистить","Добавить объект" и "Сохранить"
         self.ui.pushButton_load.clicked.connect(self.load_file)
         self.ui.pushButton_clear.clicked.connect(self.clear_file)
         self.ui.pushButton_addObject.clicked.connect(self.add_object)
+        self.ui.pushButton_save.clicked.connect(self.save_selected_objects)
 
         # Подключение контекстного меню для удаления выделенных объектов
         self.ui.listWidget_objects.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -68,6 +69,12 @@ class ViewWidget(QtWidgets.QMainWindow):
             self.ui.lineEdit_filePath.setText(file_path)
             try:
                 self.grid_data = read_grd_file(file_path)
+                self.metadata = {
+                    'xllcorner': 0.0,
+                    'yllcorner': 0.0,
+                    'cellsize': 1.0
+                }
+                self.map_renderer.display_heatmap(self.grid_data)
                 self.map_renderer.display_heatmap(self.grid_data)
                 self.status_label.setText(f"Файл загружен. Размер массива: {self.grid_data.shape}")
             except Exception as e:
@@ -82,7 +89,7 @@ class ViewWidget(QtWidgets.QMainWindow):
             Функция обработки кнопки 'Добавить объект'
         """
         # Сбрасываем текущий полигон (если есть)
-        self.point_manager.clear_points()
+        self.point_manager.clear_current_polygon()
 
         # Обновляем статус
         self.status_label.setText("Режим выделения: кликайте по карте, двойной клик — завершить")
@@ -144,19 +151,46 @@ class ViewWidget(QtWidgets.QMainWindow):
         """
         self.object_list_manager.add_object(name, obj_type, polygon)
 
+        # Определяем цвет
+        color_map = {"channel": (0, 0, 255), "bar": (255, 0, 0), "other": (0, 255, 0)}
+        color = color_map.get(obj_type, (0, 255, 0))
+
+        # Рисуем на карте
+        self.point_manager.add_saved_polygon(polygon, color=color)
+
     def delete_selected_objects(self):
         """
-            Функция удаляет отмеченные объекты
+            Фунция удаляет отмеченные объекты ИЗ списка и с карты
         """
-        count = self.object_list_manager.delete_selected()
-        if count > 0:
-            self.status_label.setText(f"Удалено объектов: {count}")
-        else:
+        # Собираем индексы для удаления (в прямом порядке для сохранения соответствия)
+        indices_to_remove = []
+        for i in range(self.ui.listWidget_objects.count()):
+            item = self.ui.listWidget_objects.item(i)
+            if item.checkState() == QtCore.Qt.Checked:
+                indices_to_remove.append(i)
+
+        if not indices_to_remove:
             self.status_label.setText("Нет отмеченных объектов для удаления")
+            return
+
+        # Удаляем с конца, чтобы индексы не сбивались
+        for index in reversed(indices_to_remove):
+            # 1. Удаляем из списка
+            self.ui.listWidget_objects.takeItem(index)
+
+            # 2. Удаляем с карты
+            if index < len(self.point_manager.saved_polygon_items):
+                # Удаляем графический элемент
+                item_to_remove = self.point_manager.saved_polygon_items.pop(index)
+                self.point_manager.plot_widget.removeItem(item_to_remove)
+                # Удаляем данные
+                self.point_manager.saved_polygons.pop(index)
+
+        self.status_label.setText(f"Удалено объектов: {len(indices_to_remove)}")
 
     def show_context_menu(self, pos):
         """
-            Показывает контекстное меню при правом клике на списке объектов
+            Фунция показывает контекстное меню при правом клике на списке объектов
         """
         # Проверяем, есть ли хоть один отмеченный объект
         has_checked = False
@@ -190,6 +224,49 @@ class ViewWidget(QtWidgets.QMainWindow):
         self.ui.lineEdit_filePath.clear()
         self.grid_data = None
         self.map_renderer.clear()  # Очищаем карту
-        self.point_manager.clear_points()  # Очищаем точки
+        self.point_manager.clear_all()  # Очищаем все полигоны
         self.object_list_manager.clear_all()  # Очищаем список "ТЕКУЩИЕ ОБЪЕКТЫ"
         self.status_label.setText("Файл удален, карта и добавленные объекты очищены")
+
+    def save_selected_objects(self):
+        """
+            Функция сохраняет выделенные объекты
+        """
+        # Получаем выделенные объекты
+        selected_objects = self.object_list_manager.get_selected_objects()
+
+        # Создаём контроллер сохранения
+        saver = WorkerSaver(self.grid_data, self.metadata)  # metadata нужно хранить при загрузке
+
+        # Получаем путь
+        file_path = saver.get_save_path(self)
+        if not file_path:
+            return
+
+        # Сохраняем
+        if saver.save_selected_objects(self, selected_objects, file_path):
+            self.status_label.setText(f"Сохранено: {len(selected_objects)} объектов")
+
+            # Спрашиваем о загрузке
+            reply = QtWidgets.QMessageBox.question(
+                self, "Загрузить файл?", "Файл сохранён. Загрузить его?",
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+            if reply == QtWidgets.QMessageBox.Yes:
+                self.load_saved_file(file_path)
+        else:
+            self.status_label.setText("Ошибка сохранения")
+
+    def load_saved_file(self, file_path):
+        """
+            Фунция загружает сохранённый файл
+        """
+        try:
+            self.grid_data = read_grd_file(file_path)
+            self.ui.lineEdit_filePath.setText(file_path)
+            self.map_renderer.display_heatmap(self.grid_data)
+            self.point_manager.clear_all()
+            self.object_list_manager.clear_all()
+            self.status_label.setText("Сохранённый файл загружен")
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Ошибка", str(e))
