@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
-    <height>667</height>
+    <width>899</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,18 +23,7 @@ QMainWindow {
 QLabel#Label {
     font-size: 20px;
     font-weight: bold;
-    color: #FF8C42;
-    padding: 10px 20px;
-    margin: 10px 0 15px 0;
-    background: qlineargradient(
-        x1: 0, y1: 0,
-        x2: 1, y2: 0,
-        stop: 0 #FFF2E8,
-        stop: 1 #FFE6D5
-    );
-    border-radius: 20px;
-    border: 1px solid #FFD0B0;
-    min-width: 180px;
+    color: black;
     text-align: center;
 }
 
@@ -49,11 +38,10 @@ QGroupBox {
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
-    padding: 0 10px;
-    color: #FF8C42;
-    font-weight: bold;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0px;
     background: transparent;
-    border-left: 3px solid #FF8C42;
 }
 
 /* Кнопки — с градиентом от розового к оранжевому */
@@ -69,7 +57,6 @@ QPushButton {
     padding: 8px 16px;
     color: white;
     font-weight: bold;
-    min-width: 80px;
     box-shadow: 0 2px 4px rgba(255, 140, 66, 0.2);
 }
 QPushButton:hover {
@@ -125,6 +112,7 @@ QLineEdit {
     border-radius: 6px;
     padding: 6px 10px;
     color: #333;
+	text-align: center;
 }
 QLineEdit:focus {
     border: 1px solid #FF8C42;
@@ -138,7 +126,6 @@ QLabel#XSource, QLabel#ZSource, QLabel#AngleLabel {
     padding: 4px 8px;
     color: #555;
     font-size: 13px;
-    min-width: 60px;
     text-align: center;
 }
 
@@ -186,18 +173,73 @@ QWidget#widget {
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="0">
-     <widget class="QGroupBox" name="BigGroupBox">
-      <property name="title">
-       <string/>
+     <widget class="QLabel" name="Label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel#titleLabel {
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}</string>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Eiconal Solver&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Policy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>8</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="0">
+     <widget class="QWidget" name="BigWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>500</height>
+       </size>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QGroupBox" name="LeftBlocks">
+        <widget class="QWidget" name="LeftBlocks" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>343</width>
+           <height>0</height>
+          </size>
          </property>
          <property name="maximumSize">
           <size>
@@ -205,32 +247,91 @@ QWidget#widget {
            <height>16777215</height>
           </size>
          </property>
-         <property name="title">
-          <string/>
-         </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
            <widget class="QGroupBox" name="ModelBox">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>200</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QGroupBox:title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0px;
+    background: transparent;
+}</string>
+            </property>
             <property name="title">
              <string>Загрузка скоростной модели</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QListWidget" name="UploadedFileWidget"/>
+              <widget class="QListWidget" name="UploadedFileWidget">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>100</height>
+                </size>
+               </property>
+               <property name="mouseTracking">
+                <bool>false</bool>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::SelectionMode::ExtendedSelection</enum>
+               </property>
+               <property name="sortingEnabled">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_5">
-               <property name="title">
-                <string/>
-               </property>
+              <widget class="QWidget" name="widget" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <item>
                  <widget class="QPushButton" name="UploadButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>93</width>
+                    <height>33</height>
+                   </size>
+                  </property>
                   <property name="maximumSize">
                    <size>
-                    <width>16777215</width>
-                    <height>16777215</height>
+                    <width>93</width>
+                    <height>33</height>
                    </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+    background-color: #FF8C42; /* оранжевый */
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: #FF702A; /* чуть темнее при наведении */
+}
+
+QPushButton:pressed {
+    background-color: #E66B25; /* ещё темнее при нажатии */
+}</string>
                   </property>
                   <property name="text">
                    <string>Загрузить</string>
@@ -239,8 +340,57 @@ QWidget#widget {
                 </item>
                 <item>
                  <widget class="QPushButton" name="ClearButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>93</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>93</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+    background-color: #8BC34A; /* светло-зелёный */
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+}
+
+QPushButton:hover{
+    background-color: #7CB342; /* чуть темнее при наведении */
+}
+
+QPushButton:pressed{
+    background-color: #689F38; /* ещё темнее при нажатии */
+}</string>
+                  </property>
                   <property name="text">
-                   <string>Очистить</string>
+                   <string>Удалить</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="delta_line">
+                  <property name="toolTip">
+                   <string>Шаг сетки, м</string>
+                  </property>
+                  <property name="text">
+                   <string>1</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -252,34 +402,61 @@ QWidget#widget {
           </item>
           <item>
            <widget class="QGroupBox" name="SourceBox">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>100</height>
+             </size>
+            </property>
             <property name="title">
-             <string>Источник волны</string>
+             <string>Начальные данные</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
-              <widget class="QGroupBox" name="groupBox_6">
-               <property name="title">
-                <string/>
-               </property>
+              <widget class="QWidget" name="widget_6" native="true">
                <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
-                 <widget class="QLabel" name="XSource">
+                 <widget class="QLineEdit" name="X_line">
+                  <property name="toolTip">
+                   <string>Координата X источника, м </string>
+                  </property>
+                  <property name="toolTipDuration">
+                   <number>-1</number>
+                  </property>
                   <property name="text">
-                   <string/>
+                   <string>0.0</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
+                  </property>
+                  <property name="clearButtonEnabled">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="ZSource">
+                 <widget class="QLineEdit" name="Z_line">
+                  <property name="toolTip">
+                   <string>Координата Z источника, м </string>
+                  </property>
                   <property name="text">
-                   <string/>
+                   <string>0.0</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="AngleLabel">
+                 <widget class="QLineEdit" name="theta_line">
+                  <property name="toolTip">
+                   <string>Угол в градусах</string>
+                  </property>
                   <property name="text">
-                   <string/>
+                   <string>45</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -291,29 +468,240 @@ QWidget#widget {
           </item>
           <item>
            <widget class="QGroupBox" name="AnimationBox">
-            <property name="title">
-             <string>Анимация волны</string>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>223</height>
+             </size>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>200</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>Рассчёт траекторий</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QPushButton" name="StartButton">
-               <property name="text">
-                <string>Старт</string>
+              <widget class="QListWidget" name="trajectoriesWidget">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>63</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+               </property>
+               <property name="dragEnabled">
+                <bool>false</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::SelectionMode::MultiSelection</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="PauseButton">
-               <property name="text">
-                <string>Пауза</string>
-               </property>
+              <widget class="QWidget" name="widget_2" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <item>
+                 <widget class="QPushButton" name="StartButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>84</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>84</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+    background-color: #FF8C42; /* оранжевый */
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: #FF702A; /* чуть темнее при наведении */
+}
+
+QPushButton:pressed {
+    background-color: #E66B25; /* ещё темнее при нажатии */
+}</string>
+                  </property>
+                  <property name="text">
+                   <string>Создать</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>84</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>84</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+    background-color: #FF8C42; /* оранжевый */
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: #FF702A; /* чуть темнее при наведении */
+}
+
+QPushButton:pressed {
+    background-color: #E66B25; /* ещё темнее при нажатии */
+}</string>
+                  </property>
+                  <property name="text">
+                   <string>Экспорт</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Policy::Fixed</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="DeleteButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>84</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>84</width>
+                    <height>33</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+    background-color: #8BC34A; /* светло-зелёный */
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+}
+
+QPushButton:hover{
+    background-color: #7CB342; /* чуть темнее при наведении */
+}
+
+QPushButton:pressed{
+    background-color: #689F38; /* ещё темнее при нажатии */
+}</string>
+                  </property>
+                  <property name="text">
+                   <string>Удалить</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="ResetButton">
-               <property name="text">
-                <string>Сброс</string>
-               </property>
+              <widget class="QWidget" name="widget_3" native="true">
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QPushButton" name="ShowButton">
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+    background-color: #FF8C42; /* оранжевый */
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: #FF702A; /* чуть темнее при наведении */
+}
+
+QPushButton:pressed {
+    background-color: #E66B25; /* ещё темнее при нажатии */
+}</string>
+                  </property>
+                  <property name="text">
+                   <string>Показать</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="HideButton">
+                  <property name="styleSheet">
+                   <string notr="true">QPushButton {
+    background-color: #8BC34A; /* светло-зелёный */
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+}
+
+QPushButton:hover{
+    background-color: #7CB342; /* чуть темнее при наведении */
+}
+
+QPushButton:pressed{
+    background-color: #689F38; /* ещё темнее при нажатии */
+}</string>
+                  </property>
+                  <property name="text">
+                   <string>Скрыть</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
@@ -341,20 +729,43 @@ QWidget#widget {
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QWidget" name="widget" native="true"/>
+           <layout class="QVBoxLayout" name="PlotWidget">
+            <property name="sizeConstraint">
+             <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+            </property>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item>
            <widget class="QListWidget" name="StatusWidget">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>50</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>50</height>
+              <height>81</height>
              </size>
             </property>
            </widget>
@@ -363,22 +774,6 @@ QWidget#widget {
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="Label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Eiconal Solver&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
      </widget>
     </item>
    </layout>
