@@ -1,6 +1,6 @@
 from PySide6.QtCore import QRunnable, Slot
 import numpy as np
-from ..Calculate.Solver.Eiconal_solver import EiconalSolver
+from ..Calculate.Solver.Eiconal_solver import gradient_point, gradient_field, trajectory_calculator
 from .Worker_signals import WorkerSignals
 
 class SolverWorker(QRunnable):
@@ -19,7 +19,7 @@ class SolverWorker(QRunnable):
             deg = np.degrees(self.theta)
             self.signals.message.emit(f"Расчёт траектории под углом {deg:.0f}°...")
 
-            trajectory = EiconalSolver.trajectory_calculator(
+            trajectory = trajectory_calculator(
                 self.v_model, self.x0, self.z0, self.theta, self.delta
             )
 
