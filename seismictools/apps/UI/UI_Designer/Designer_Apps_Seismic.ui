@@ -241,7 +241,7 @@ QComboBox::down-arrow {
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <spacer name="verticalSpacer_4">
+            <spacer name="verticalSpacer_between_border_and_File">
              <property name="orientation">
               <enum>Qt::Orientation::Vertical</enum>
              </property>
@@ -254,7 +254,7 @@ QComboBox::down-arrow {
             </spacer>
            </item>
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_for_LoadSEGY" stretch="0,0,0,0">
+            <layout class="QVBoxLayout" name="verticalLayout_for_LoadSEGY" stretch="0,0,0">
              <property name="leftMargin">
               <number>6</number>
              </property>
@@ -282,7 +282,7 @@ QComboBox::down-arrow {
                 <number>5</number>
                </property>
                <item>
-                <widget class="QLabel" name="label">
+                <widget class="QLabel" name="label_File">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -294,7 +294,7 @@ QComboBox::down-arrow {
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_2">
+                <spacer name="horizontalSpacer_between_File_lineEdit">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -307,28 +307,12 @@ QComboBox::down-arrow {
                 </spacer>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit"/>
+                <widget class="QLineEdit" name="lineEdit_NameFile"/>
                </item>
               </layout>
              </item>
              <item>
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Policy::Expanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>7</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_8">
+              <spacer name="verticalSpacer_between_File_and_pButton_double">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>
@@ -371,7 +355,7 @@ QComboBox::down-arrow {
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer">
+                <spacer name="horizontalSpacer_between_pBLoad_and_pBClear">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -401,7 +385,7 @@ QComboBox::down-arrow {
             </layout>
            </item>
            <item>
-            <spacer name="verticalSpacer_5">
+            <spacer name="verticalSpacer_between_pButton_and_border">
              <property name="orientation">
               <enum>Qt::Orientation::Vertical</enum>
              </property>
@@ -429,7 +413,7 @@ QComboBox::down-arrow {
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,4,1,4,1,2,2,1">
+            <layout class="QVBoxLayout" name="verticalLayout_SettingFilter" stretch="1,4,1,4,1,2,2,1">
              <property name="leftMargin">
               <number>6</number>
              </property>
@@ -443,7 +427,7 @@ QComboBox::down-arrow {
               <number>5</number>
              </property>
              <item>
-              <spacer name="verticalSpacer_6">
+              <spacer name="verticalSpacer_between_border_and_Filter">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>
@@ -470,7 +454,7 @@ QComboBox::down-arrow {
                 <number>5</number>
                </property>
                <item>
-                <widget class="QLabel" name="label_3">
+                <widget class="QLabel" name="label_Filter">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -482,7 +466,7 @@ QComboBox::down-arrow {
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_5">
+                <spacer name="horizontalSpacer_between_Filter_and_comboBox">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -495,7 +479,7 @@ QComboBox::down-arrow {
                 </spacer>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox">
+                <widget class="QComboBox" name="comboBox_for_typeFilter">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -525,7 +509,7 @@ QComboBox::down-arrow {
               </layout>
              </item>
              <item>
-              <spacer name="verticalSpacer_2">
+              <spacer name="verticalSpacer_between_Filter_and_NFilter">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>
@@ -552,7 +536,7 @@ QComboBox::down-arrow {
                 <number>5</number>
                </property>
                <item>
-                <widget class="QLabel" name="label_2">
+                <widget class="QLabel" name="label_NFilter">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -564,7 +548,7 @@ QComboBox::down-arrow {
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_4">
+                <spacer name="horizontalSpacer_between_NFilter_and_spinBox">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -595,7 +579,7 @@ QComboBox::down-arrow {
               </layout>
              </item>
              <item>
-              <spacer name="verticalSpacer_3">
+              <spacer name="verticalSpacer_between_NFilter_and_ArrangeFreq">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>
@@ -622,7 +606,7 @@ QComboBox::down-arrow {
                 <number>5</number>
                </property>
                <item>
-                <widget class="QLabel" name="label_4">
+                <widget class="QLabel" name="label_RangeFreq">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -642,7 +626,7 @@ QComboBox::down-arrow {
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1,2,1,1,1,2">
+              <layout class="QHBoxLayout" name="horizontalLayout_Min_Max" stretch="1,1,2,1,1,1,2">
                <property name="leftMargin">
                 <number>6</number>
                </property>
@@ -653,7 +637,7 @@ QComboBox::down-arrow {
                 <number>10</number>
                </property>
                <item>
-                <widget class="QLabel" name="label_5">
+                <widget class="QLabel" name="label_Min">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -665,7 +649,7 @@ QComboBox::down-arrow {
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_6">
+                <spacer name="horizontalSpacer_between_Min_lineEdit">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -678,10 +662,10 @@ QComboBox::down-arrow {
                 </spacer>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_2"/>
+                <widget class="QLineEdit" name="lineEdit_forMin"/>
                </item>
                <item>
-                <spacer name="horizontalSpacer_8">
+                <spacer name="horizontalSpacer_between_lineEdit_Max">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -694,7 +678,7 @@ QComboBox::down-arrow {
                 </spacer>
                </item>
                <item>
-                <widget class="QLabel" name="label_6">
+                <widget class="QLabel" name="label_Max">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -706,7 +690,7 @@ QComboBox::down-arrow {
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_7">
+                <spacer name="horizontalSpacer_between_Max_lineEdit">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -719,12 +703,12 @@ QComboBox::down-arrow {
                 </spacer>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_3"/>
+                <widget class="QLineEdit" name="lineEdit_forMax"/>
                </item>
               </layout>
              </item>
              <item>
-              <spacer name="verticalSpacer_7">
+              <spacer name="verticalSpacer_between_ArrangeFreq_and_border">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>
@@ -756,7 +740,7 @@ QComboBox::down-arrow {
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_for_applyFilter">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="4,1,4">
+              <layout class="QHBoxLayout" name="horizontalLayout_ApplyFilter" stretch="4,1,4">
                <property name="spacing">
                 <number>5</number>
                </property>
@@ -786,7 +770,7 @@ QComboBox::down-arrow {
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_3">
+                <spacer name="horizontalSpacer_between_pBApply_and_pBReset">
                  <property name="orientation">
                   <enum>Qt::Orientation::Horizontal</enum>
                  </property>
@@ -834,6 +818,11 @@ QComboBox::down-arrow {
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout_for_plotgraf"/>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

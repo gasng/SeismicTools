@@ -31,9 +31,9 @@ class WorkerFilter(QRunnable):
         self.high_freq = high_freq
         self.fs = fs
         self.order = order
-        self.signals = WorkerSignals()@Slot()
+        self.signals = WorkerSignals()
 
-    def working_filter(self):
+    def run(self):
         """
         Проходит по всем трассам (iline, xline), применяет полосовой фильтр
         к каждому одномерному временному разрезу и собирает результат в новый куб.
@@ -65,7 +65,8 @@ class WorkerFilter(QRunnable):
                         progress_percent = int(processed / total_traces * 100)
                         self.signals.progress.emit(progress_percent)
 
-            self.signals.message.emit(f'Фильтрация завершена: {total_traces} трасс обработано')
+            msg = 'Filtering complete: ' + total_traces + ' traces processed'
+            self.signals.message.emit(msg)
             self.signals.result.emit(filtered_data)
 
         except Exception as exc:

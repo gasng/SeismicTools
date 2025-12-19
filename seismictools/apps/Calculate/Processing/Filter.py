@@ -56,7 +56,7 @@ class BandPassFilter:
         """
         Функция фильтрации.
         На вход принимает data - массив сигналов.
-        Затем идет проверка, что это одномерный массив. Т.к. если это будет
+        Затем идет проверка, что это одномерный массив.
         """
         if data.ndim != 1:
             raise ValueError("A one-dimensional array is expected")

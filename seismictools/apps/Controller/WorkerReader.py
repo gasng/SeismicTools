@@ -23,8 +23,7 @@ class WorkerReader(QRunnable):
         self.file_path = file_path
         self.signals = WorkerSignals()
 
-    @Slot()
-    def working(self):
+    def run(self):
         """
         Выполняет чтение сейсмического файла SEG-Y в фоновом потоке.
 
