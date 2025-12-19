@@ -92,11 +92,15 @@ class EiconalSolver(QtWidgets.QMainWindow):
 
 
     def plot_model(self, result):
+        delta = float(self.ui.delta_line.text())
+
         if self.ui.PlotWidget.count():
             self.ui.PlotWidget.takeAt(0).widget().deleteLater()
-        delta = float(self.ui.delta_line.text())
+
         self.current_plot_widget = GatherPlotWidget(result, on_ray_selected=self.update_initial_conditions, delta=delta)
         self.ui.PlotWidget.addWidget(self.current_plot_widget)
+
+        self.ui.trajectoriesWidget.clear()
 
 
     def replot_model(self):
@@ -107,6 +111,8 @@ class EiconalSolver(QtWidgets.QMainWindow):
 
         self.current_plot_widget = GatherPlotWidget(self.model, on_ray_selected=self.update_initial_conditions, delta=delta)
         self.ui.PlotWidget.addWidget(self.current_plot_widget)
+
+        self.ui.trajectoriesWidget.clear()
 
 
     def calculation(self):
