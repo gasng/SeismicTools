@@ -75,5 +75,5 @@ def main():
 
     return app.exec_()
 
-if getattr(sys, 'frozen', False):
+if __name__ == '__main__':
     main()

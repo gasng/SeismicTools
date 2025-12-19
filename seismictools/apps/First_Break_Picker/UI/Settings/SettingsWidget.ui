@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>790</width>
+    <height>709</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="CentralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="Tab_widget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="Settings_page">
+       <attribute name="title">
+        <string/>
+       </attribute>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="4" column="0">
+         <layout class="QHBoxLayout" name="Layout_with_Picks_box">
+          <item>
+           <widget class="QGroupBox" name="PIcks_box">
+            <property name="title">
+             <string>Picks avilabel</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <layout class="QVBoxLayout" name="Picks_layout">
+               <item>
+                <widget class="QTableWidget" name="Picks_table_widget">
+                 <column>
+                  <property name="text">
+                   <string>Trace</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Time</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Pick type</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="Picks_buttoms_layout">
+                 <item>
+                  <widget class="QPushButton" name="Delite_one_buttom">
+                   <property name="text">
+                    <string>Delete Pick</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="Delite_all_buttom">
+                   <property name="text">
+                    <string>Delete All</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QPushButton" name="Save_Picks_buttom">
+                 <property name="text">
+                  <string>Save picks as .json</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="4" column="1">
+         <widget class="QGroupBox" name="Upload_Box">
+          <property name="title">
+           <string>Upload Data</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="topMargin">
+            <number>9</number>
+           </property>
+           <property name="rightMargin">
+            <number>9</number>
+           </property>
+           <item>
+            <layout class="QVBoxLayout" name="Upload_layout_1">
+             <item>
+              <widget class="QLabel" name="SGY_file_label">
+               <property name="text">
+                <string>SGY-file</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="SGY_files_line"/>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="Upload_buttoms_layout">
+               <item>
+                <widget class="QPushButton" name="Upload_buttom">
+                 <property name="text">
+                  <string>Upload</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="Clear_buttom">
+                 <property name="text">
+                  <string>Clear</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QLabel" name="Formats_label">
+               <property name="text">
+                <string>files formats - .sgy/.segy</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QPushButton" name="show_log_buttom">
+          <property name="text">
+           <string>Show log</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="Settings_list_label">
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>change view</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QListWidget" name="Log_line"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Plotting_Page">
+       <attribute name="title">
+        <string/>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+        </property>
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>2</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>2</number>
+        </property>
+        <item>
+         <layout class="QVBoxLayout" name="layout_with_plot">
+          <item>
+           <widget class="QGroupBox" name="Groupe_box_of_Plot_screen">
+            <property name="title">
+             <string>Plotting</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QWidget" name="Plot_screen" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_2"/>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
