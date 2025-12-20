@@ -2,6 +2,8 @@ import sys
 import numpy as np
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QFileDialog, QLayout, QLayoutItem, QWidget
+
+from seismictools.apps.First_Break_Picker.Calculate.Data.SeismicPicks import Picks_data
 from seismictools.apps.First_Break_Picker.UI.Settings.SettingsWidget import Ui_MainWindow
 from seismictools.apps.First_Break_Picker.Controller.WorkerReader import WorkerReader
 from seismictools.apps.First_Break_Picker.UI.View.ViewWidget import ViewWidget
@@ -16,17 +18,23 @@ class FirstBreakPicker(QtWidgets.QMainWindow):
         #######################################Перечисление виджетов####################################################
         self.worker_reader = None
         self.view_widget = None
+
         #######################################Перечисление виджетов####################################################
 
         #################################################Кнопки#########################################################
         self.ui.Upload_buttom.clicked.connect(self.load_sgy)
         self.ui.pushButton.clicked.connect(self.toggle_display_mode)
         self.ui.Clear_buttom.clicked.connect(self.clear_sgy)
+
         #################################################Кнопки#########################################################
 
         self.display_mode = "heatmap"
         self.init_plot()
-
+        Pick_type = self.ui.Picks_choose
+        Pick_type.addItem('First_Break')
+        Pick_type.addItem('Refraction')
+        Pick_type.addItem('Reflection')
+        Pick_type.currentTextChanged.connect(self.set_pick_type)
     ##################################Подключение виждета смены режимов отображения#####################################
     def toggle_display_mode(self):
         return None
@@ -70,11 +78,11 @@ class FirstBreakPicker(QtWidgets.QMainWindow):
     def print_message(self, string):
         return None
 
-    def on_pick_added(self, trace_index, time_sample):
+    def on_pick_added(self, pick_data : Picks_data):
+        self.add_to_log(f"Пик добавлен: трасса {pick_data.trace_index}, время {pick_data.time}")
 
-        self.add_to_log(f"Пик добавлен: трасса {trace_index + 1}, время {time_sample}")
-
-
+    def set_pick_type(self, pick_type):
+        self.view_widget.set_pick_type(pick_type)
     ##################################Блок обработки ошибок#############################################################
     def on_error(self, error_msg: str):
         # 1. Добавляем в лог

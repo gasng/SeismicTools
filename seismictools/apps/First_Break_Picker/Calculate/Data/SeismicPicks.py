@@ -5,6 +5,6 @@ import json
 
 @dataclass
 class Picks_data:
-    station = None
-    time = None
-    type = None
+    trace_index: int
+    time : float
+    type : str

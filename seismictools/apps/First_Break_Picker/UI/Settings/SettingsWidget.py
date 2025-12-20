@@ -15,11 +15,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFormLayout, QGridLayout, QGroupBox,
-    QHBoxLayout, QHeaderView, QLabel, QLayout,
-    QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
-    QPushButton, QSizePolicy, QStatusBar, QTabWidget,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLayout, QLineEdit, QListWidget, QListWidgetItem,
+    QMainWindow, QPushButton, QSizePolicy, QStatusBar,
+    QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -36,6 +37,26 @@ class Ui_MainWindow(object):
         self.Settings_page.setObjectName(u"Settings_page")
         self.formLayout = QFormLayout(self.Settings_page)
         self.formLayout.setObjectName(u"formLayout")
+        self.Settings_list_label = QLabel(self.Settings_page)
+        self.Settings_list_label.setObjectName(u"Settings_list_label")
+
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.Settings_list_label)
+
+        self.pushButton = QPushButton(self.Settings_page)
+        self.pushButton.setObjectName(u"pushButton")
+
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.pushButton)
+
+        self.Log_line = QListWidget(self.Settings_page)
+        self.Log_line.setObjectName(u"Log_line")
+
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.Log_line)
+
+        self.show_log_buttom = QPushButton(self.Settings_page)
+        self.show_log_buttom.setObjectName(u"show_log_buttom")
+
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.show_log_buttom)
+
         self.Layout_with_Picks_box = QHBoxLayout()
         self.Layout_with_Picks_box.setObjectName(u"Layout_with_Picks_box")
         self.PIcks_box = QGroupBox(self.Settings_page)
@@ -129,26 +150,6 @@ class Ui_MainWindow(object):
 
         self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.Upload_Box)
 
-        self.show_log_buttom = QPushButton(self.Settings_page)
-        self.show_log_buttom.setObjectName(u"show_log_buttom")
-
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.show_log_buttom)
-
-        self.Settings_list_label = QLabel(self.Settings_page)
-        self.Settings_list_label.setObjectName(u"Settings_list_label")
-
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.Settings_list_label)
-
-        self.pushButton = QPushButton(self.Settings_page)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.pushButton)
-
-        self.Log_line = QListWidget(self.Settings_page)
-        self.Log_line.setObjectName(u"Log_line")
-
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.Log_line)
-
         self.Tab_widget.addTab(self.Settings_page, "")
         self.Plotting_Page = QWidget()
         self.Plotting_Page.setObjectName(u"Plotting_Page")
@@ -170,6 +171,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.Plot_screen)
 
+        self.Picks_choose = QComboBox(self.Groupe_box_of_Plot_screen)
+        self.Picks_choose.setObjectName(u"Picks_choose")
+
+        self.verticalLayout_5.addWidget(self.Picks_choose)
+
 
         self.layout_with_plot.addWidget(self.Groupe_box_of_Plot_screen)
 
@@ -178,7 +184,7 @@ class Ui_MainWindow(object):
 
         self.Tab_widget.addTab(self.Plotting_Page, "")
 
-        self.gridLayout.addWidget(self.Tab_widget, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.Tab_widget, 0, 1, 1, 1)
 
         MainWindow.setCentralWidget(self.CentralWidget)
         self.statusbar = QStatusBar(MainWindow)
@@ -187,7 +193,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.Tab_widget.setCurrentIndex(0)
+        self.Tab_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -195,6 +201,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.Settings_list_label.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"change view", None))
+        self.show_log_buttom.setText(QCoreApplication.translate("MainWindow", u"Show log", None))
         self.PIcks_box.setTitle(QCoreApplication.translate("MainWindow", u"Picks avilabel", None))
         ___qtablewidgetitem = self.Picks_table_widget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Trace", None));
@@ -210,9 +219,6 @@ class Ui_MainWindow(object):
         self.Upload_buttom.setText(QCoreApplication.translate("MainWindow", u"Upload", None))
         self.Clear_buttom.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.Formats_label.setText(QCoreApplication.translate("MainWindow", u"files formats - .sgy/.segy", None))
-        self.show_log_buttom.setText(QCoreApplication.translate("MainWindow", u"Show log", None))
-        self.Settings_list_label.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"change view", None))
         self.Tab_widget.setTabText(self.Tab_widget.indexOf(self.Settings_page), "")
         self.Groupe_box_of_Plot_screen.setTitle(QCoreApplication.translate("MainWindow", u"Plotting", None))
         self.Tab_widget.setTabText(self.Tab_widget.indexOf(self.Plotting_Page), "")

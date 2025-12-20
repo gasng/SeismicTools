@@ -15,16 +15,40 @@
   </property>
   <widget class="QWidget" name="CentralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+    <item row="0" column="1">
      <widget class="QTabWidget" name="Tab_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Settings_page">
        <attribute name="title">
         <string/>
        </attribute>
        <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="Settings_list_label">
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>change view</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QListWidget" name="Log_line"/>
+        </item>
+        <item row="2" column="1">
+         <widget class="QPushButton" name="show_log_buttom">
+          <property name="text">
+           <string>Show log</string>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="0">
          <layout class="QHBoxLayout" name="Layout_with_Picks_box">
           <item>
@@ -140,30 +164,6 @@
           </layout>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="show_log_buttom">
-          <property name="text">
-           <string>Show log</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="Settings_list_label">
-          <property name="text">
-           <string>Settings</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>change view</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QListWidget" name="Log_line"/>
-        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="Plotting_Page">
@@ -201,6 +201,9 @@
               <widget class="QWidget" name="Plot_screen" native="true">
                <layout class="QVBoxLayout" name="verticalLayout_2"/>
               </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="Picks_choose"/>
              </item>
             </layout>
            </widget>
