@@ -2,7 +2,6 @@ import sys
 import numpy as np
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QFileDialog
-
 from seismictools.apps.Eiconal_Solver.Controller.Reader_worker import ReaderWorker
 from seismictools.apps.Eiconal_Solver.Controller.Solver_worker import SolverWorker
 from seismictools.apps.Eiconal_Solver.UI.main_window_ui import Ui_MainWindow
@@ -15,9 +14,10 @@ class EiconalSolver(QtWidgets.QMainWindow):
 
         self.threadpool = QtCore.QThreadPool()
 
-        self.model = None
-        self.trajectories = dict()
+        self.current_model_path = None
+        self.model_trajectories_names = dict()
         self.current_plot_widget = None
+
 
         self.solver_worker = None
         self.reader_worker = None
@@ -40,12 +40,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
         self.ui.DeleteButton.clicked.connect(self.delete_trajectory)
 
     def upload_npy_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Выберите файл модели",
-            "",  # текущая папка
-            "NumPy файлы (*.npy)"
-        )
+        file_path, _ = QFileDialog.getOpenFileName(self,"Выберите файл модели","","NumPy файлы (*.npy)")
 
         if file_path:
             if any(self.ui.UploadedFileWidget.item(i).text() == file_path for i in
@@ -54,7 +49,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
                 return
 
             self.ui.UploadedFileWidget.addItem(file_path)
-
+            self.model_trajectories_names[file_path] = dict()
             self.ui.StatusWidget.addItem(f"Загружен: {file_path}")
 
 
@@ -69,6 +64,8 @@ class EiconalSolver(QtWidgets.QMainWindow):
             self.ui.UploadedFileWidget.takeItem(
                 self.ui.UploadedFileWidget.row(item)
             )
+            path = item.text()
+            self.model_trajectories_names.pop(path)
 
         self.ui.StatusWidget.addItem(f"Удалено {len(selected_items)} файлов")
 
@@ -84,6 +81,10 @@ class EiconalSolver(QtWidgets.QMainWindow):
             self.reader_worker.signals.result.connect(self.plot_model)
             self.reader_worker.signals.result.connect(self.set_model)
             self.threadpool.start(self.reader_worker)
+            self.current_model_path = path
+            self.ui.trajectoriesWidget.clear()
+            for i in self.model_trajectories_names[path]:
+                self.ui.trajectoriesWidget.addItem(i)
 
 
         else:
@@ -97,10 +98,8 @@ class EiconalSolver(QtWidgets.QMainWindow):
         if self.ui.PlotWidget.count():
             self.ui.PlotWidget.takeAt(0).widget().deleteLater()
 
-        self.current_plot_widget = GatherPlotWidget(result, on_ray_selected=self.update_initial_conditions, delta=delta)
+        self.current_plot_widget = GatherPlotWidget(result, on_ray_selected=self.update_initial_conditions, delta=delta, path=self.current_model_path)
         self.ui.PlotWidget.addWidget(self.current_plot_widget)
-
-        self.ui.trajectoriesWidget.clear()
 
 
     def replot_model(self):
@@ -109,7 +108,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
         if self.ui.PlotWidget.count():
             self.ui.PlotWidget.takeAt(0).widget().deleteLater()
 
-        self.current_plot_widget = GatherPlotWidget(self.model, on_ray_selected=self.update_initial_conditions, delta=delta)
+        self.current_plot_widget = GatherPlotWidget(self.model, on_ray_selected=self.update_initial_conditions, delta=delta, path=self.current_model_path)
         self.ui.PlotWidget.addWidget(self.current_plot_widget)
 
         self.ui.trajectoriesWidget.clear()
@@ -139,15 +138,16 @@ class EiconalSolver(QtWidgets.QMainWindow):
 
         name = 'x=' + str(x_0) + ', z=' + str(z_0) + ', theta=' + str(theta)
         self.current_plot_widget.animate_trajectory(result, name)
-        self.trajectories[name] = result
+        self.model_trajectories_names[self.current_model_path][name] = result
         self.ui.trajectoriesWidget.addItem(name)
+        self.model_trajectories_names[self.current_model_path][name] = result
 
 
     def show_trajectory(self):
         items = self.ui.trajectoriesWidget.selectedItems()
         for i in items:
             name = i.text()
-            self.current_plot_widget.animate_trajectory(self.trajectories[name], name)
+            self.current_plot_widget.animate_trajectory(self.model_trajectories_names[self.current_model_path][name], name)
 
 
     def hide_trajectory(self):
@@ -167,7 +167,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
         for item in items:
             self.ui.trajectoriesWidget.takeItem(self.ui.trajectoriesWidget.row(item))
             name = item.text()
-            self.trajectories.pop(name)
+            self.model_trajectories_names[self.current_model_path].pop(name)
             self.current_plot_widget.delete_trajectory(name)
 
         self.ui.StatusWidget.addItem(f"Удалено {len(items)} траекторий.")
@@ -177,12 +177,13 @@ class EiconalSolver(QtWidgets.QMainWindow):
         if self.current_plot_widget is None:
             self.print_error("Сначала загрузите и отобразите скоростную модель.")
             return
-        x0, y0 = self.current_plot_widget.start_point or (0.0, 0.0)
-        theta = self.current_plot_widget.theta or 0.0
+        x0, y0 = self.current_plot_widget.start_point
+        theta = self.current_plot_widget.theta
         self.update_initial_conditions(x0, y0, theta)
 
 
     def update_initial_conditions(self, x0, y0, theta_rad):
+        print(f"update_initial_conditions called with: x0={x0:.6f}, y0={y0:.6f}, theta={np.degrees(theta_rad):.2f}°")
         self.ui.X_line.setText(f"{x0:.2f}")
         self.ui.Z_line.setText(f"{y0:.2f}")
         self.ui.theta_line.setText(f"{np.degrees(theta_rad):.0f}")
@@ -197,6 +198,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
             self.ui.X_line.setText("0.0")
             self.print_error('Вы должны ввести число. Если дробное, используйте точку.')
 
+
     def set_default_z(self):
         if self.ui.Z_line.text() == "":
             self.ui.Z_line.setText("0.0")
@@ -205,6 +207,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
         except ValueError:
             self.ui.Z_line.setText("0.0")
             self.print_error('Вы должны ввести число. Если дробное, используйте точку.')
+
 
     def set_default_theta(self):
         if self.ui.theta_line.text() == "":
@@ -215,6 +218,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
             self.ui.theta_line.setText("0.0")
             self.print_error('Вы должны ввести число. Если дробное, используйте точку.')
 
+
     def set_default_delta(self):
         if self.ui.delta_line.text() == "":
             self.ui.delta_line.setText("1.0")
@@ -223,6 +227,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
         except ValueError:
             self.ui.delta_line.setText("1.0")
             self.print_error('Вы должны ввести число. Если дробное, используйте точку.')
+
 
     def set_model(self, result):
         self.model = result
@@ -263,15 +268,13 @@ class EiconalSolver(QtWidgets.QMainWindow):
     def print_message(self, text):
         self.ui.StatusWidget.addItem(text)
 
+
     def print_error(self, text):
         self.ui.StatusWidget.addItem(text)
 
 
-
-
-
-
-
+    def scroll_status_bar(self):
+        self.ui.StatusWidget.scrollToBottom()
 
 
 
