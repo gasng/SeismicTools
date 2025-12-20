@@ -4,21 +4,22 @@ from PySide6 import QtCore
 import numpy as np
 
 class GatherPlotWidget(QWidget):
-    def __init__(self, model, on_ray_selected=None, delta=1.0):
+    def __init__(self, model, path, on_ray_selected=None, delta=1.0):
         super().__init__()
         self.model = model
         self.on_ray_selected = on_ray_selected
         self.delta = delta
+        self.current_path = path
         self.plot_widget = None
-        self.trajectory_lines = dict()
+        self.models_trajectory_lines = dict()
         self.start_point = None
         self.is_drawing_vector = False
         self.theta = None
         self.vector = None
-        self.plot_model()
+        self.plot_model(path)
         self.create_callbacks()
 
-    def plot_model(self):
+    def plot_model(self, path):
         self.plot_widget = pg.PlotWidget()
         layout = QVBoxLayout(self)
         layout.addWidget(self.plot_widget)
@@ -31,7 +32,7 @@ class GatherPlotWidget(QWidget):
 
         view_box.setMouseEnabled(x=True, y=True)
 
-        view_box.setAspectLocked(lock=True, ratio=1.0)
+        view_box.setAspectLocked(lock=True)
         view_box.setLimits(
             minXRange=width_phys / 50,
             minYRange=height_phys / 50,
@@ -43,10 +44,6 @@ class GatherPlotWidget(QWidget):
 
         img = pg.ImageItem(self.model.T)
         img.setLevels([np.min(self.model), np.max(self.model)])
-
-        pos = [0.0, 0.5, 1.0]
-        color = [(255, 255, 255), (0, 0, 150), (150, 0, 0)]
-        cmap = pg.ColorMap(pos, color)
 
         pos = [0.0, 0.25, 0.5, 0.75, 1.0]
         color = [(30, 144, 255), (100, 200, 150), (255, 255, 100), (255, 165, 0), (255, 69, 0)]
@@ -64,6 +61,8 @@ class GatherPlotWidget(QWidget):
         img.setRect((0, 0, width_phys, height_phys))
         self.plot_widget.addItem(img)
         self.plot_widget.setLabel('left', 'Z, м')
+        self.models_trajectory_lines[path] = dict()
+        self.current_path = path
 
 
     def animate_trajectory(self, trajectory: np.ndarray, name):
@@ -71,9 +70,9 @@ class GatherPlotWidget(QWidget):
         self.vector = None
         self.is_drawing_vector = False
 
-        self.trajectory_lines[name] = pg.PlotDataItem(x=[trajectory[0, 0]], y=[trajectory[0, 1]], pen=pg.mkPen('white', width=3), symbol='o', symbolSize=4, symbolBrush='white')
+        self.models_trajectory_lines[self.current_path][name] = pg.PlotDataItem(x=[trajectory[0, 0]], y=[trajectory[0, 1]], pen=pg.mkPen('white', width=3), symbol='o', symbolSize=4, symbolBrush='white')
 
-        self.plot_widget.addItem(self.trajectory_lines[name])
+        self.plot_widget.addItem(self.models_trajectory_lines[self.current_path][name])
 
         timer = QtCore.QTimer(self)
         index = [1]
@@ -83,24 +82,24 @@ class GatherPlotWidget(QWidget):
             if index[0] < len(trajectory) - len(trajectory)//k:
                 x_data = trajectory[:index[0]+len(trajectory)//k, 0]
                 z_data = trajectory[:index[0]+len(trajectory)//k, 1]
-                self.trajectory_lines[name].setData(x=x_data, y=z_data)
+                self.models_trajectory_lines[self.current_path][name].setData(x=x_data, y=z_data)
                 index[0] += len(trajectory)//k
             else:
                 timer.stop()
                 timer.deleteLater()
-                self.trajectory_lines[name].setData(x=trajectory[:, 0], y=trajectory[:, 1])
+                self.models_trajectory_lines[self.current_path][name].setData(x=trajectory[:, 0], y=trajectory[:, 1])
 
         timer.timeout.connect(update)
         timer.start()
 
 
     def hide_trajectory(self, name):
-        self.plot_widget.removeItem(self.trajectory_lines[name])
+        self.plot_widget.removeItem(self.models_trajectory_lines[self.current_path][name])
 
 
     def delete_trajectory(self, name):
-        self.plot_widget.removeItem(self.trajectory_lines[name])
-        self.trajectory_lines.pop(name)
+        self.plot_widget.removeItem(self.models_trajectory_lines[self.current_path][name])
+        self.models_trajectory_lines[self.current_path].pop(name)
 
 
     def create_callbacks(self):
@@ -111,23 +110,25 @@ class GatherPlotWidget(QWidget):
     def mouse_clicked(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
             pos = self.plot_widget.plotItem.vb.mapSceneToView(event.scenePos())
-            x, y = pos.x(), pos.y()
+            print(f"Mouse clicked at: x={pos.x():.4f}, y={pos.y():.4f}")
 
             if not self.is_drawing_vector:
+                x, y = pos.x(), pos.y()
                 self.start_point = (x, y)
+                print(f"Start point set to: ({x:.4f}, {y:.4f})")
                 self.is_drawing_vector = True
                 if self.vector is not None:
                     self.plot_widget.removeItem(self.vector)
-                self.vector = pg.PlotDataItem(x=[x, x],my=[y, y],npen=pg.mkPen('white', width=4))
+                self.vector = pg.PlotDataItem(x=[x, x],my=[y, y],npen=pg.mkPen('black', width=int(max(self.model.shape)/50)))
                 self.plot_widget.addItem(self.vector)
 
             else:
+                x, y = pos.x(), pos.y()
                 x0, y0 = self.start_point
                 dx = x - x0
                 dy = y - y0
                 self.theta = np.arctan2(dy, dx)
                 if self.on_ray_selected is not None:
-                    x0, y0 = self.start_point
                     self.on_ray_selected(x0, y0, self.theta)
                 self.is_drawing_vector = False
 
@@ -137,12 +138,4 @@ class GatherPlotWidget(QWidget):
             pos_view = self.plot_widget.plotItem.vb.mapSceneToView(pos_scene)
             x0, y0 = self.start_point
             x1, y1 = pos_view.x(), pos_view.y()
-            dx = x1 - x0
-            dy = y1 - y0
-            length = np.hypot(dx, dy)
-
-            if length > 1e-6:
-                scale = 30.0 / length
-                dx *= scale
-                dy *= scale
-            self.vector.setData(x=[x0, x0 + dx], y=[y0, y0 + dy])
+            self.vector.setData(x=[x0, x1], y=[y0, y1])
