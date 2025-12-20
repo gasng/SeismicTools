@@ -42,11 +42,6 @@ class Ui_MainWindow(object):
 
         self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.Settings_list_label)
 
-        self.pushButton = QPushButton(self.Settings_page)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.pushButton)
-
         self.Log_line = QListWidget(self.Settings_page)
         self.Log_line.setObjectName(u"Log_line")
 
@@ -139,6 +134,11 @@ class Ui_MainWindow(object):
 
         self.Upload_layout_1.addLayout(self.Upload_buttoms_layout)
 
+        self.Load_Picks_buttom = QPushButton(self.Upload_Box)
+        self.Load_Picks_buttom.setObjectName(u"Load_Picks_buttom")
+
+        self.Upload_layout_1.addWidget(self.Load_Picks_buttom)
+
         self.Formats_label = QLabel(self.Upload_Box)
         self.Formats_label.setObjectName(u"Formats_label")
 
@@ -149,6 +149,11 @@ class Ui_MainWindow(object):
 
 
         self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.Upload_Box)
+
+        self.Toggele_mode = QComboBox(self.Settings_page)
+        self.Toggele_mode.setObjectName(u"Toggele_mode")
+
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.Toggele_mode)
 
         self.Tab_widget.addTab(self.Settings_page, "")
         self.Plotting_Page = QWidget()
@@ -193,7 +198,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.Tab_widget.setCurrentIndex(1)
+        self.Tab_widget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -202,7 +207,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.Settings_list_label.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"change view", None))
         self.show_log_buttom.setText(QCoreApplication.translate("MainWindow", u"Show log", None))
         self.PIcks_box.setTitle(QCoreApplication.translate("MainWindow", u"Picks avilabel", None))
         ___qtablewidgetitem = self.Picks_table_widget.horizontalHeaderItem(0)
@@ -218,7 +222,8 @@ class Ui_MainWindow(object):
         self.SGY_file_label.setText(QCoreApplication.translate("MainWindow", u"SGY-file", None))
         self.Upload_buttom.setText(QCoreApplication.translate("MainWindow", u"Upload", None))
         self.Clear_buttom.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
-        self.Formats_label.setText(QCoreApplication.translate("MainWindow", u"files formats - .sgy/.segy", None))
+        self.Load_Picks_buttom.setText(QCoreApplication.translate("MainWindow", u"Load Picks", None))
+        self.Formats_label.setText(QCoreApplication.translate("MainWindow", u"files formats - .sgy/.segy for seismogramm json for Picks", None))
         self.Tab_widget.setTabText(self.Tab_widget.indexOf(self.Settings_page), "")
         self.Groupe_box_of_Plot_screen.setTitle(QCoreApplication.translate("MainWindow", u"Plotting", None))
         self.Tab_widget.setTabText(self.Tab_widget.indexOf(self.Plotting_Page), "")

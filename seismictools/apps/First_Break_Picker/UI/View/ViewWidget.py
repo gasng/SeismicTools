@@ -12,7 +12,8 @@ from seismictools.apps.First_Break_Picker.Controller.WorkerReader import WorkerS
 
 class PickSignal(QObject):
     pick_added = Signal(int, float, str)    # trace, time, type
-    pick_removed = Signal(int, str)         # trace, type
+    pick_removed = Signal(int, str)
+    picks_interpolated = Signal(str, list)# trace, type
 
 
 class ViewWidget(QWidget):
@@ -32,10 +33,15 @@ class ViewWidget(QWidget):
         self.picks = {
 
         }
-        self.pick_markers = {}  # {тип: ScatterPlotItem}
-        self.pick_curves = {}  # {тип: PlotDataItem}
-
+        self.last_pick = None
+        self.pick_markers = {}
+        self.pick_curves = {}
+        self.plot_widget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
         self.plot_widget.scene().sigMouseClicked.connect(self.mouseClicked)
+        view_box = self.plot_widget.getViewBox()
+        if view_box is not None:
+            view_box.setMouseMode(view_box.PanMode)
+            view_box.setMenuEnabled(False)
         self.plot()
 
     ######################################Интерактивность###############################################################
@@ -45,6 +51,7 @@ class ViewWidget(QWidget):
 
         if event.button() != QtCore.Qt.MouseButton.LeftButton:
             return
+
         try:
             plot_item = self.plot_widget.getPlotItem()
             if plot_item is None or plot_item.vb is None:
@@ -53,32 +60,47 @@ class ViewWidget(QWidget):
             position = event.scenePos()
             view_position = plot_item.vb.mapSceneToView(position)
             x, y = view_position.x(), view_position.y()
-
             trace_idx = int(round(x))
-            time_idx = int(round(y))
 
-            if not (0 <= trace_idx < self.SGYdata.data.shape[1] and
-                    0 <= time_idx < self.SGYdata.data.shape[0]):
+            # Проверка границ трассы
+            if not (0 <= trace_idx < self.SGYdata.data.shape[1]):
                 return
 
-            # Удаляем существующий пик на этой трассе для этого типа
-            if self.Pick_type in self.picks and trace_idx in self.picks[self.Pick_type]:
-                self.remove_pick(trace_idx, self.Pick_type)
+            # === Обработка ПРАВОГО клика: удаление пика ===
+            if event.button() == QtCore.Qt.MouseButton.RightButton:
+                if (self.Pick_type in self.picks and
+                        trace_idx in self.picks[self.Pick_type]):
+                    self.remove_pick(trace_idx, self.Pick_type)
+                return
 
-            # Добавляем новый пик
-            if self.Pick_type not in self.picks:
-                self.picks[self.Pick_type] = {}
-            self.picks[self.Pick_type][trace_idx] = time_idx
+            # === Обработка ЛЕВОГО клика: добавление пика ===
+            if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                time_idx = int(round(y))
+                if not (0 <= time_idx < self.SGYdata.data.shape[0]):
+                    return
 
-            # Обновляем визуализацию
-            self._update_pick_visualization(self.Pick_type)
+                current_pick = (trace_idx, time_idx, self.Pick_type)
 
-            # Отправляем сигнал
-            self.pickSignal.pick_added.emit(trace_idx, time_idx, self.Pick_type)
+                # Интерполяция (если включена)
+                if (self.last_pick is not None and
+                        self.last_pick[2] == self.Pick_type and
+                        abs(trace_idx - self.last_pick[0]) > 1):
 
+                    # Удаляем промежуточные пики
+                    start = min(trace_idx, self.last_pick[0])
+                    end = max(trace_idx, self.last_pick[0])
+                    for t in range(start + 1, end):
+                        if t in self.picks.get(self.Pick_type, {}):
+                            self.remove_pick(t, self.Pick_type)
+
+                    # Интерполируем
+                    self._interpolate_picks(self.last_pick, current_pick)
+
+                self.last_pick = current_pick
+                self.add_pick(trace_idx, time_idx, self.Pick_type)
 
         except Exception as e:
-            self.signals.error.emit(e.args[0])
+            self.signals.error.emit(str(e))
             self.signals.result.emit(None)
 
     def remove_pick(self, trace_idx: int, pick_type: str):
@@ -89,16 +111,13 @@ class ViewWidget(QWidget):
             self.pickSignal.pick_removed.emit(trace_idx, pick_type)
 
     def _update_pick_visualization(self, pick_type: str):
-        """Обновить маркеры и линии для типа пика"""
-        # Цвета по типу
         colors = {
-            'First_Break': 'r',
-            'Refraction': 'g',
-            'Reflection': 'b'
+            'First_Break': 'yellow',
+            'Refraction': 'purple',
+            'Reflection': 'green'
         }
         color = colors.get(pick_type, 'y')
 
-        # Получаем координаты
         if pick_type not in self.picks:
             x_coords, y_coords = [], []
         else:
@@ -108,7 +127,7 @@ class ViewWidget(QWidget):
 
         # Маркеры
         if pick_type not in self.pick_markers:
-            self.pick_markers[pick_type] = pg.ScatterPlotItem(size=2, brush=color)
+            self.pick_markers[pick_type] = pg.ScatterPlotItem(size=5, brush=color)
             self.plot_widget.addItem(self.pick_markers[pick_type])
         self.pick_markers[pick_type].setData(x=x_coords, y=y_coords)
 
@@ -120,6 +139,84 @@ class ViewWidget(QWidget):
         elif pick_type in self.pick_curves:
             self.plot_widget.removeItem(self.pick_curves[pick_type])
             del self.pick_curves[pick_type]
+
+    def _interpolate_picks(self, start_pick, end_pick):
+        try:
+            """Интерполирует пики БЕЗ частых перерисовок"""
+            start_trace, start_time, pick_type = start_pick
+            end_trace, end_time, _ = end_pick
+
+            if start_trace > end_trace:
+                start_trace, end_trace = end_trace, start_trace
+                start_time, end_time = end_time, start_time
+
+            # Собираем ВСЕ новые пики
+            new_picks = {}
+            for trace in range(start_trace + 1, end_trace):
+                time = start_time + (end_time - start_time) * (trace - start_trace) / (end_trace - start_trace)
+                new_picks[trace] = time
+
+            # Удаляем ВСЕ старые промежуточные пики
+            if pick_type in self.picks:
+                traces_to_remove = [
+                    t for t in self.picks[pick_type].keys()
+                    if start_trace < t < end_trace
+                ]
+                for trace in traces_to_remove:
+                    del self.picks[pick_type][trace]
+
+            # Добавляем ВСЕ новые пики
+            if pick_type not in self.picks:
+                self.picks[pick_type] = {}
+            self.picks[pick_type].update(new_picks)
+
+            # ОДНА перерисовка
+            self._update_pick_visualization(pick_type)
+
+            # ОДИН сигнал со всеми новыми пиками
+            self.pickSignal.picks_interpolated.emit(
+                pick_type,
+                [(trace, time) for trace, time in new_picks.items()]
+            )
+
+        except Exception as e:
+            self.signals.error.emit(str(e))
+            self.signals.result.emit(None)
+
+    def add_pick(self, trace_idx: int, time_idx: float, pick_type: str):
+        """Добавляет пик с обновлением визуализации"""
+        if pick_type not in self.picks:
+            self.picks[pick_type] = {}
+
+        # Удаляем существующий пик на этой трассе
+        if trace_idx in self.picks[pick_type]:
+            self.remove_pick(trace_idx, pick_type)
+
+        # Добавляем новый пик
+        self.picks[pick_type][trace_idx] = time_idx
+        self._update_pick_visualization(pick_type)
+
+        # Отправляем сигнал (только для ручных пиков)
+        self.pickSignal.pick_added.emit(trace_idx, time_idx, pick_type)
+
+    def clear_all_picks(self):
+        """Очищает все пики"""
+        self.picks.clear()
+        # Удаляем визуальные элементы
+        for marker in self.pick_markers.values():
+            self.plot_widget.removeItem(marker)
+        for curve in self.pick_curves.values():
+            self.plot_widget.removeItem(curve)
+        self.pick_markers.clear()
+        self.pick_curves.clear()
+        self.last_pick = None
+
+    def remove_pick_by_data(self, trace_idx: int, pick_type: str):
+        """Удаляет пик по данным (вызывается из main.py)"""
+        if pick_type in self.picks and trace_idx in self.picks[pick_type]:
+            del self.picks[pick_type][trace_idx]
+            self._update_pick_visualization(pick_type)
+            # Не отправляем сигнал pick_removed, чтобы избежать зацикливания!
     ####################################################################################################################
     def getData(self, data : SegYData):
         try:
@@ -146,8 +243,6 @@ class ViewWidget(QWidget):
             #Для последующих запусков,чтоб прочистить картинку
             if self.image_item is not None:
                 self.plot_widget.removeItem(self.image_item)
-            #if self.histogram is not None:
-                #self.plot_widget.removeItem(self.histogram)
 
             #Формирование изображения
             data = self.SGYdata.data
@@ -164,12 +259,14 @@ class ViewWidget(QWidget):
             self.plot_widget.setLabel('left', 'Время (отсчёты)')
             self.plot_widget.setTitle("Тепловая карта сейсмограммы")
 
+
         except Exception as e:
             self.signals.error.emit(e.args[0])
             self.signals.result.emit(None)
 
     def set_pick_type(self, pick_type: str):
         self.Pick_type = pick_type
+        self.last_pick = None
 
     def clear(self):
         try:
@@ -179,4 +276,14 @@ class ViewWidget(QWidget):
         except Exception as e:
             self.signals.error.emit(e.args[0])
             self.signals.result.emit(None)
+
+    def change_display_mode(self, display_mode):
+        if self.SGYdata is None or self.image_item is None:
+            return
+
+        if self.image_item is None:
+            return
+        colormap = pg.colormap.get(display_mode)
+        self.image_item.setLookupTable(colormap.getLookupTable())
+
 
