@@ -3,17 +3,22 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtCore import QObject, Signal
 import numpy as np
+
+
 class PlotClickedSignal(QObject):
     clicked = Signal(float, float)  # x (время), y (амплитуда)
+
+
 import colorcet
 from seismictools.apps.First_Break_Picker.Calculate.Data.SeismicData import SegYData
 from seismictools.apps.First_Break_Picker.Calculate.Data.SeismicPicks import Picks_data
 from seismictools.apps.First_Break_Picker.Controller.WorkerReader import WorkerSignals
 
+
 class PickSignal(QObject):
-    pick_added = Signal(int, float, str)    # trace, time, type
+    pick_added = Signal(int, float, str)  # trace, time, type
     pick_removed = Signal(int, str)
-    picks_interpolated = Signal(str, list)# trace, type
+    picks_interpolated = Signal(str, list)  # trace, type
 
 
 class ViewWidget(QWidget):
@@ -24,18 +29,17 @@ class ViewWidget(QWidget):
         layout.addWidget(self.plot_widget)
         self.setLayout(layout)
 
-        self.SGYdata : SegYData = None
+        self.SGYdata: SegYData = None
         self.image_item = None
         self.signals = WorkerSignals()
         self.pickSignal = PickSignal()
 
-        self.Pick_type : str = 'First_Break'
-        self.picks = {
-
-        }
+        self.Pick_type: str = 'First_Break'
+        self.picks = {}
         self.last_pick = None
         self.pick_markers = {}
         self.pick_curves = {}
+
         self.plot_widget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
         self.plot_widget.scene().sigMouseClicked.connect(self.mouseClicked)
         view_box = self.plot_widget.getViewBox()
@@ -44,7 +48,85 @@ class ViewWidget(QWidget):
             view_box.setMenuEnabled(False)
         self.plot()
 
-    ######################################Интерактивность###############################################################
+    ######################################
+    # ЗАГРУЗКА И ОТОБРАЖЕНИЕ ДАННЫХ
+    ######################################
+
+    def getData(self, data):
+        try:
+            self.SGYdata = data
+            raw_data = data.data
+            # Нормализация
+            gather_normalized = np.zeros_like(raw_data, dtype=np.float32)
+            for i in range(gather_normalized.shape[1]):
+                trace = raw_data[:, i]
+                norm = np.max(np.abs(trace))
+                if norm != 0:
+                    gather_normalized[:, i] = trace / norm
+            self.SGYdata = SegYData(data=gather_normalized)
+            self.plot()
+        except Exception as e:
+            self.signals.error.emit(e.args[0])
+            self.signals.result.emit(None)
+
+    def plot(self):
+        try:
+            # Для первого запуска, пока данные не переданы
+            if self.SGYdata is None:
+                return None
+            # Для последующих запусков,чтоб прочистить картинку
+            if self.image_item is not None:
+                self.plot_widget.removeItem(self.image_item)
+
+            # Формирование изображения
+            data = self.SGYdata.data
+            self.image_item = pg.ImageItem()
+            self.image_item.setImage(data[::-1].T)
+            self.plot_widget.addItem(self.image_item)
+            # self.plot_widget.addItem(self.histogram)
+
+            colormap = pg.colormap.get('seismic', source='matplotlib')
+            self.image_item.setLookupTable(colormap.getLookupTable())
+
+            # Настраиваем оси
+            self.plot_widget.setLabel('bottom', 'Номер трассы')
+            self.plot_widget.setLabel('left', 'Время (отсчёты)')
+            self.plot_widget.setTitle("Тепловая карта сейсмограммы")
+
+        except Exception as e:
+            self.signals.error.emit(e.args[0])
+            self.signals.result.emit(None)
+
+    def change_display_mode(self, display_mode):
+        if self.SGYdata is None or self.image_item is None:
+            return
+
+        if self.image_item is None:
+            return
+        colormap = pg.colormap.get(display_mode)
+        self.image_item.setLookupTable(colormap.getLookupTable())
+
+    def clear(self):
+        try:
+            if self.image_item is not None:
+                self.plot_widget.removeItem(self.image_item)
+            self.SGYdata: SegYData = None
+        except Exception as e:
+            self.signals.error.emit(e.args[0])
+            self.signals.result.emit(None)
+
+    ######################################
+    # УПРАВЛЕНИЕ ТИПАМИ ПИКОВ
+    ######################################
+
+    def set_pick_type(self, pick_type: str):
+        self.Pick_type = pick_type
+        self.last_pick = None
+
+    ######################################
+    # ИНТЕРАКТИВНОСТЬ: КЛИКИ И ПИКИ
+    ######################################
+
     def mouseClicked(self, event):
         if self.SGYdata is None or self.image_item is None:
             return
@@ -103,6 +185,22 @@ class ViewWidget(QWidget):
             self.signals.error.emit(str(e))
             self.signals.result.emit(None)
 
+    def add_pick(self, trace_idx: int, time_idx: float, pick_type: str):
+        """Добавляет пик с обновлением визуализации"""
+        if pick_type not in self.picks:
+            self.picks[pick_type] = {}
+
+        # Удаляем существующий пик на этой трассе
+        if trace_idx in self.picks[pick_type]:
+            self.remove_pick(trace_idx, pick_type)
+
+        # Добавляем новый пик
+        self.picks[pick_type][trace_idx] = time_idx
+        self._update_pick_visualization(pick_type)
+
+        # Отправляем сигнал (только для ручных пиков)
+        self.pickSignal.pick_added.emit(trace_idx, time_idx, pick_type)
+
     def remove_pick(self, trace_idx: int, pick_type: str):
         """Удалить пик"""
         if pick_type in self.picks and trace_idx in self.picks[pick_type]:
@@ -110,35 +208,28 @@ class ViewWidget(QWidget):
             self._update_pick_visualization(pick_type)
             self.pickSignal.pick_removed.emit(trace_idx, pick_type)
 
-    def _update_pick_visualization(self, pick_type: str):
-        colors = {
-            'First_Break': 'yellow',
-            'Refraction': 'purple',
-            'Reflection': 'green'
-        }
-        color = colors.get(pick_type, 'y')
+    def remove_pick_by_data(self, trace_idx: int, pick_type: str):
+        """Удаляет пик по данным (вызывается из main.py)"""
+        if pick_type in self.picks and trace_idx in self.picks[pick_type]:
+            del self.picks[pick_type][trace_idx]
+            self._update_pick_visualization(pick_type)
+            # Не отправляем сигнал pick_removed, чтобы избежать зацикливания!
 
-        if pick_type not in self.picks:
-            x_coords, y_coords = [], []
-        else:
-            items = sorted(self.picks[pick_type].items())  # сортируем по трассам
-            x_coords = [item[0] for item in items]
-            y_coords = [item[1] for item in items]
+    def clear_all_picks(self):
+        """Очищает все пики"""
+        self.picks.clear()
+        # Удаляем визуальные элементы
+        for marker in self.pick_markers.values():
+            self.plot_widget.removeItem(marker)
+        for curve in self.pick_curves.values():
+            self.plot_widget.removeItem(curve)
+        self.pick_markers.clear()
+        self.pick_curves.clear()
+        self.last_pick = None
 
-        # Маркеры
-        if pick_type not in self.pick_markers:
-            self.pick_markers[pick_type] = pg.ScatterPlotItem(size=5, brush=color)
-            self.plot_widget.addItem(self.pick_markers[pick_type])
-        self.pick_markers[pick_type].setData(x=x_coords, y=y_coords)
-
-        # Линии
-        if len(x_coords) > 1:
-            if pick_type not in self.pick_curves:
-                self.pick_curves[pick_type] = self.plot_widget.plot(pen=pg.mkPen(color, width=2))
-            self.pick_curves[pick_type].setData(x=x_coords, y=y_coords)
-        elif pick_type in self.pick_curves:
-            self.plot_widget.removeItem(self.pick_curves[pick_type])
-            del self.pick_curves[pick_type]
+    ######################################
+    # ИНТЕРПОЛЯЦИЯ И ВИЗУАЛИЗАЦИЯ ПИКОВ
+    ######################################
 
     def _interpolate_picks(self, start_pick, end_pick):
         try:
@@ -183,107 +274,32 @@ class ViewWidget(QWidget):
             self.signals.error.emit(str(e))
             self.signals.result.emit(None)
 
-    def add_pick(self, trace_idx: int, time_idx: float, pick_type: str):
-        """Добавляет пик с обновлением визуализации"""
+    def _update_pick_visualization(self, pick_type: str):
+        colors = {
+            'First_Break': 'yellow',
+            'Refraction': 'purple',
+            'Reflection': 'green'
+        }
+        color = colors.get(pick_type, 'y')
+
         if pick_type not in self.picks:
-            self.picks[pick_type] = {}
+            x_coords, y_coords = [], []
+        else:
+            items = sorted(self.picks[pick_type].items())  # сортируем по трассам
+            x_coords = [item[0] for item in items]
+            y_coords = [item[1] for item in items]
 
-        # Удаляем существующий пик на этой трассе
-        if trace_idx in self.picks[pick_type]:
-            self.remove_pick(trace_idx, pick_type)
+        # Маркеры
+        if pick_type not in self.pick_markers:
+            self.pick_markers[pick_type] = pg.ScatterPlotItem(size=5, brush=color)
+            self.plot_widget.addItem(self.pick_markers[pick_type])
+        self.pick_markers[pick_type].setData(x=x_coords, y=y_coords)
 
-        # Добавляем новый пик
-        self.picks[pick_type][trace_idx] = time_idx
-        self._update_pick_visualization(pick_type)
-
-        # Отправляем сигнал (только для ручных пиков)
-        self.pickSignal.pick_added.emit(trace_idx, time_idx, pick_type)
-
-    def clear_all_picks(self):
-        """Очищает все пики"""
-        self.picks.clear()
-        # Удаляем визуальные элементы
-        for marker in self.pick_markers.values():
-            self.plot_widget.removeItem(marker)
-        for curve in self.pick_curves.values():
-            self.plot_widget.removeItem(curve)
-        self.pick_markers.clear()
-        self.pick_curves.clear()
-        self.last_pick = None
-
-    def remove_pick_by_data(self, trace_idx: int, pick_type: str):
-        """Удаляет пик по данным (вызывается из main.py)"""
-        if pick_type in self.picks and trace_idx in self.picks[pick_type]:
-            del self.picks[pick_type][trace_idx]
-            self._update_pick_visualization(pick_type)
-            # Не отправляем сигнал pick_removed, чтобы избежать зацикливания!
-    ####################################################################################################################
-    def getData(self, data : SegYData):
-        try:
-            self.SGYdata = data
-            raw_data = data.data
-            # Нормализация
-            gather_normalized = np.zeros_like(raw_data, dtype=np.float32)
-            for i in range(gather_normalized.shape[1]):
-                trace = raw_data[:, i]
-                norm = np.max(np.abs(trace))
-                if norm != 0:
-                    gather_normalized[:, i] = trace / norm
-            self.SGYdata = SegYData(data=gather_normalized)
-            self.plot()
-        except Exception as e:
-            self.signals.error.emit(e.args[0])
-            self.signals.result.emit(None)
-
-    def plot(self):
-        try:
-            #Для первого запуска, пока данные не переданы
-            if self.SGYdata is None:
-                return None
-            #Для последующих запусков,чтоб прочистить картинку
-            if self.image_item is not None:
-                self.plot_widget.removeItem(self.image_item)
-
-            #Формирование изображения
-            data = self.SGYdata.data
-            self.image_item = pg.ImageItem()
-            self.image_item.setImage(data[::-1].T)
-            self.plot_widget.addItem(self.image_item)
-            #self.plot_widget.addItem(self.histogram)
-
-            colormap = pg.colormap.get('seismic', source='matplotlib')
-            self.image_item.setLookupTable(colormap.getLookupTable())
-
-            # Настраиваем оси
-            self.plot_widget.setLabel('bottom', 'Номер трассы')
-            self.plot_widget.setLabel('left', 'Время (отсчёты)')
-            self.plot_widget.setTitle("Тепловая карта сейсмограммы")
-
-
-        except Exception as e:
-            self.signals.error.emit(e.args[0])
-            self.signals.result.emit(None)
-
-    def set_pick_type(self, pick_type: str):
-        self.Pick_type = pick_type
-        self.last_pick = None
-
-    def clear(self):
-        try:
-            if self.image_item is not None:
-                self.plot_widget.removeItem(self.image_item)
-            self.SGYdata: SegYData = None
-        except Exception as e:
-            self.signals.error.emit(e.args[0])
-            self.signals.result.emit(None)
-
-    def change_display_mode(self, display_mode):
-        if self.SGYdata is None or self.image_item is None:
-            return
-
-        if self.image_item is None:
-            return
-        colormap = pg.colormap.get(display_mode)
-        self.image_item.setLookupTable(colormap.getLookupTable())
-
-
+        # Линии
+        if len(x_coords) > 1:
+            if pick_type not in self.pick_curves:
+                self.pick_curves[pick_type] = self.plot_widget.plot(pen=pg.mkPen(color, width=2))
+            self.pick_curves[pick_type].setData(x=x_coords, y=y_coords)
+        elif pick_type in self.pick_curves:
+            self.plot_widget.removeItem(self.pick_curves[pick_type])
+            del self.pick_curves[pick_type]
