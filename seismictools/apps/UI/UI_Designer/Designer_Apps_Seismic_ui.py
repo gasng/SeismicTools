@@ -570,7 +570,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("Bandpass filter", u"MainWindow", None))
         self.groupBox_LoadSEGY.setTitle(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 SEGY", None))
         self.label_File.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0430\u0439\u043b:", None))
         self.pushButton_load.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c", None))

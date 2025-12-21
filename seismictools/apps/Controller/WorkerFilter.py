@@ -36,13 +36,25 @@ class WorkerFilter(QRunnable):
 
     def run(self):
         """
-        Проходит по всем трассам (iline, xline), применяет полосовой фильтр
-        к каждому одномерному временному разрезу и собирает результат в новый куб.
+        Проходит по всем трассам (номер трассы, время).
+        Применяет заданный цифровой фильтр (bandpass/lowpass/highpass) ко всем трассам
+        во входном массиве self.data и возвращает отфильтрованный результат через сигналы.
         """
+        freq = None
         try:
+            try:
+                if self.type_filter == 'bandpass':
+                    freq = (float(self.low_freq), float(self.high_freq))
+                elif self.type_filter == 'lowpass':
+                    freq = float(self.high_freq)
+                elif self.type_filter == 'highpass':
+                    freq = float(self.low_freq)
+            except ValueError as e:
+                raise ValueError(f"Invalid frequency value: {e}")
+
             bp_filter = BandPassFilter(
                 type_filter=self.type_filter,
-                freq=(self.low_freq, self.high_freq),
+                freq=freq,
                 fs=self.fs,
                 order=self.order
             )

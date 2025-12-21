@@ -3,80 +3,93 @@ import numpy as np
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 class SeismicPlotWidget(QWidget):
-    def __init__(self, original_data, filtered_data=None, split_pos=0.5):
+    def __init__(self, original_data, filtered_data=None):
+        """
+        Инициализацция всех настроек для отрисовки.
+        """
         super().__init__()
 
         self.plot_widget = pg.PlotWidget()
         self.plot_widget.setBackground('black')
-        self.plot_widget.showGrid(x=True, y=True, alpha=0.3)
+        self.plot_widget.setAspectLocked(False)
 
-        # Создадим вертикальную палку-разделитель, или по другому drag-n-drop
-        self.split_line = pg.InfiniteLine(
+        self.im_item = pg.ImageItem()
+        self.plot_widget.addItem(self.im_item)
+
+        self.mask_item = pg.ImageItem()
+        self.plot_widget.addItem(self.mask_item)
+
+        self.curtain = pg.InfiniteLine(
             angle=90,
             movable=True,
-            pen=pg.mkPen(color='magenta', width=2),
+            pen=pg.mkPen(color='red', width=2),
             hoverPen=pg.mkPen(color='white', width=3)
-        )
-        self.split_line.setPos(0)
-        self.plot_widget.addItem(self.split_line)
-
-        self.marker = pg.ScatterPlotItem(
-            size=12,
-            symbol='o',
-            brush=pg.mkBrush('w'),
-            pen=pg.mkPen('magenta', width=2)
-        )
-        self.plot_widget.addItem(self.marker)
-
-        self.original_data = original_data
-        self.filtered_data = filtered_data
-        self.split_pos = split_pos
-
-        self.plot_data()
-
-        self.split_line.sigPositionChanged.connect(self.split_moved)
+        ) #вертикальная палка-разделитель (шторка)
+        self.plot_widget.addItem(self.curtain)
+        self.curtain.sigPositionChanged.connect(self.curtain_moved)
 
         layout = QVBoxLayout()
         layout.addWidget(self.plot_widget)
         self.setLayout(layout)
 
-    def split_moved(self):
-        """
-        Данная функция нужна, чтобы обновлять маркер/кружочек на нашей вертикальной палке
-        при ее передвижении.
-        """
-        x = self.split_line.getXPos()
-        y_min, y_max = self.plot_widget.getViewBox().viewRange()[1]
-        y_mid = (y_min + y_max) / 2
-        self.marker.setData([x], [y_mid])
+        self.split_pos = 0.5
+        self.original_data = None
+        self.filtered_data = None
+        if original_data is not None:
+            self.set_data(original_data, filtered_data)
 
-    def plot_data(self):
+    def set_data(self, original_data, filtered_data=None):
         """
-        Отрисовка данных
-        Оригинальный сигнал - слева от разделителя, отфильтрованный - справа.
+        Устанавливает исходные и отфильтрованные согналы для отображения.
+        После вызова автоматически обновляет изображение. Если отфильтрованные данные не переданы, используется копия исходных данных.
+        __________
+        Параметры:
+            original_data - (np.ndarray): Исходная сейсмограмма в формате (номер трассы, время).
+            Filtered_data - (np.ndarray): Результат фильтрации тех же размеров и в том же формате.
+        """
+        self.original_data = original_data
+        self.filtered_data = filtered_data if filtered_data is not None else original_data
+        self.update_image()
+
+    def update_image(self):
+        """
+         Отрисовка данных. Наш сигнал в 2D (номер трассы, время).
+         Оригинальный сигнал - слева от разделителя, отфильтрованный - справа.
+         """
+        if self.original_data is None:
+            return
+
+        n_traces = self.original_data.shape[0] #первая координата - номер трасы
+        n_samples = self.original_data.shape[1] #вторая координата - номер времени
+        split_x_for_Ntraces = int(self.split_pos * n_traces)
+
+        combined = np.copy(self.original_data)
+        if self.filtered_data is not None:
+            if self.filtered_data.shape != self.original_data.shape:
+                return
+            combined[split_x_for_Ntraces:,:] = self.filtered_data[split_x_for_Ntraces:, :]
+
+        self.im_item.setRect(0, 0, n_traces, n_samples)
+
+        self.curtain.setPos(split_x_for_Ntraces)
+
+        self.plot_widget.enableAutoRange()
+        self.plot_widget.getViewBox().setAspectLocked(False)
+        self.plot_widget.invertY(True)
+
+    def curtain_moved(self):
+        """
+        Функция для двимжения шторки.
+        Возвращает/считывает текущее положение шторки.
+        Так же, она ограничивает движение шторки: она движетися от 0 до самой последней трассы (n_traces).
+        Возвращает положение шторки в 50/50.
         """
         if self.original_data is None:
             return
-        x = np.arange(len(self.original_data))
+        n_traces = self.original_data.shape[0]
+        split_x = self.curtain.getXPos()
 
-        split_idx = int(len(x) * self.split_pos)
-        self.plot_widget.clear()
-        self.plot_widget.plot(x[:split_idx], self.original_data[:split_idx], pen=pg.mkPen('w', width=0.5), name="Оригинальный сигнал")
-        if self.filtered_data is not None:
-            self.plot_widget.plot(x[split_idx:], self.filtered_data[split_idx:], pen=pg.mkPen('b', width=0.5), name="Отфильтрованный сигнал")
+        split_x = np.clip(split_x, 0, n_traces) #ограничиваем положение шторки от 0 - до номера трассы
+        self.split_pos = split_x / n_traces
 
-        if len(x) > 0:
-            x_split = x[split_idx] if split_idx < len(x) else x[-1]
-            self.split_line.setPos(x_split)
-            y_min, y_max = self.plot_widget.getViewBox().viewRange()[1]
-            y_mid = (y_min + y_max) / 2
-            self.marker.setData([x_split], [y_mid])
-
-        self.plot_widget.enableAutoRange()
-
-    def set_split_pos(self, pos):
-        """
-        Устанавливаем положение палки-разделителя
-        """
-        self.split_pos = max(0.0, min(1.0, pos))
-        self.plot_data()
+        self.update_image()
