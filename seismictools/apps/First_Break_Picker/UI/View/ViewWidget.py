@@ -46,6 +46,7 @@ class ViewWidget(QWidget):
         if view_box is not None:
             view_box.setMouseMode(view_box.PanMode)
             view_box.setMenuEnabled(False)
+        self.plot_widget.setBackground('transparent')
         self.plot()
 
     ######################################
@@ -106,7 +107,7 @@ class ViewWidget(QWidget):
             self.plot_widget.setLabel('bottom', 'Номер трассы')
             self.plot_widget.setLabel('left', 'Время (отсчёты)')
             self.plot_widget.setTitle("Тепловая карта сейсмограммы")
-            self.plot_widget.setBackground('transparent')
+
 
         except Exception as e:
             self.signals.error.emit(e.args[0])
