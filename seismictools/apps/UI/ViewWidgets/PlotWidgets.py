@@ -69,6 +69,9 @@ class SeismicPlotWidget(QWidget):
                 return
             combined[split_x_for_Ntraces:,:] = self.filtered_data[split_x_for_Ntraces:, :]
 
+        vmin, vmax = np.percentile(combined, [1, 99])
+        self.im_item.setImage(combined, levels=(vmin, vmax))
+
         self.im_item.setRect(0, 0, n_traces, n_samples)
 
         self.curtain.setPos(split_x_for_Ntraces)
