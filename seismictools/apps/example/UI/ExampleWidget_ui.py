@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import pip
+from Scripts.pywin32_postinstall import install
 
 ################################################################################
 ## Form generated from reading UI file 'ExampleWidget.ui'
@@ -7,7 +9,6 @@
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
-
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
@@ -111,4 +112,3 @@ class Ui_ExampleWidget(object):
         self.MessageGB.setTitle(QCoreApplication.translate("ExampleWidget", u"\u041e\u043a\u043d\u043e \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u044f", None))
         self.MessageBtn.setText(QCoreApplication.translate("ExampleWidget", u"PushButton", None))
     # retranslateUi
-

@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QFileDialog, QLayout, QLayoutItem, QWidget
 
@@ -75,5 +74,5 @@ def main():
 
     return app.exec_()
 
-if getattr(sys, 'frozen', False):
+if __name__=='__main__':
     main()
