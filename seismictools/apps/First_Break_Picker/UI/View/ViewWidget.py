@@ -83,7 +83,21 @@ class ViewWidget(QWidget):
             self.image_item = pg.ImageItem()
             self.image_item.setImage(data[::-1].T)
             self.plot_widget.addItem(self.image_item)
-            # self.plot_widget.addItem(self.histogram)
+
+            #Ограничение обзора
+            view_box = self.plot_widget.getViewBox()
+            if view_box is not None:
+                x_min, x_max = 0, data.shape[1]  # Границы по трассам (X)
+                y_min, y_max = 0, data.shape[0]  # Границы по времени (Y)
+
+                view_box.setLimits(
+                    xMin=x_min, xMax=x_max,
+                    yMin=y_min, yMax=y_max,
+                    minXRange=1,  # Минимум 1 трасса при увеличении
+                    maxXRange=x_max,  # Максимум все трассы при уменьшении
+                    minYRange=1,  # Минимум 1 отсчёт
+                    maxYRange=y_max  # Максимум всё время
+                )
 
             colormap = pg.colormap.get('seismic', source='matplotlib')
             self.image_item.setLookupTable(colormap.getLookupTable())
@@ -92,6 +106,7 @@ class ViewWidget(QWidget):
             self.plot_widget.setLabel('bottom', 'Номер трассы')
             self.plot_widget.setLabel('left', 'Время (отсчёты)')
             self.plot_widget.setTitle("Тепловая карта сейсмограммы")
+            self.plot_widget.setBackground('transparent')
 
         except Exception as e:
             self.signals.error.emit(e.args[0])

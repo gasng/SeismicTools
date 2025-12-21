@@ -6,109 +6,83 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>790</width>
+    <width>758</width>
     <height>709</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>First Break Picker</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>software_17122633.gif</normaloff>software_17122633.gif</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="CentralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
+    <property name="sizeConstraint">
+     <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>9</number>
+    </property>
+    <property name="bottomMargin">
+     <number>9</number>
+    </property>
+    <item row="0" column="0">
      <widget class="QTabWidget" name="Tab_widget">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Settings_page">
        <attribute name="title">
-        <string/>
+        <string>Settings Page</string>
        </attribute>
        <layout class="QFormLayout" name="formLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="Settings_list_label">
-          <property name="text">
-           <string>Settings</string>
-          </property>
-         </widget>
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
+        </property>
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
+        </property>
+        <property name="rowWrapPolicy">
+         <enum>QFormLayout::RowWrapPolicy::WrapLongRows</enum>
+        </property>
+        <property name="horizontalSpacing">
+         <number>120</number>
+        </property>
+        <property name="topMargin">
+         <number>8</number>
+        </property>
+        <item row="9" column="0">
+         <layout class="QHBoxLayout" name="Layout_with_Picks_box"/>
         </item>
-        <item row="1" column="1">
-         <widget class="QListWidget" name="Log_line"/>
-        </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="show_log_buttom">
-          <property name="text">
-           <string>Show log</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <layout class="QHBoxLayout" name="Layout_with_Picks_box">
-          <item>
-           <widget class="QGroupBox" name="PIcks_box">
-            <property name="title">
-             <string>Picks avilabel</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <layout class="QVBoxLayout" name="Picks_layout">
-               <item>
-                <widget class="QTableWidget" name="Picks_table_widget">
-                 <column>
-                  <property name="text">
-                   <string>Trace</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Time</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Pick type</string>
-                  </property>
-                 </column>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="Picks_buttoms_layout">
-                 <item>
-                  <widget class="QPushButton" name="Delite_one_buttom">
-                   <property name="text">
-                    <string>Delete Pick</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="Delite_all_buttom">
-                   <property name="text">
-                    <string>Delete All</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QPushButton" name="Save_Picks_buttom">
-                 <property name="text">
-                  <string>Save picks as .json</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="4" column="1">
+        <item row="9" column="1">
          <widget class="QGroupBox" name="Upload_Box">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="title">
            <string>Upload Data</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="sizeConstraint">
+            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+           </property>
            <property name="topMargin">
             <number>9</number>
            </property>
@@ -118,7 +92,27 @@
            <item>
             <layout class="QVBoxLayout" name="Upload_layout_1">
              <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <widget class="QLabel" name="SGY_file_label">
+               <property name="styleSheet">
+                <string notr="true"> Qlabel {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}</string>
+               </property>
                <property name="text">
                 <string>SGY-file</string>
                </property>
@@ -131,6 +125,20 @@
               <layout class="QHBoxLayout" name="Upload_buttoms_layout">
                <item>
                 <widget class="QPushButton" name="Upload_buttom">
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: rgb(242, 110, 2);
+}
+QPushButton:pressed {
+    background-color: rgb(0, 113, 184);
+}</string>
+                 </property>
                  <property name="text">
                   <string>Upload</string>
                  </property>
@@ -138,6 +146,20 @@
                </item>
                <item>
                 <widget class="QPushButton" name="Clear_buttom">
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: rgb(242, 110, 2);
+}
+QPushButton:pressed {
+    background-color: rgb(0, 113, 184);
+}</string>
+                 </property>
                  <property name="text">
                   <string>Clear</string>
                  </property>
@@ -147,6 +169,20 @@
              </item>
              <item>
               <widget class="QPushButton" name="Load_Picks_buttom">
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: rgb(242, 110, 2);
+}
+QPushButton:pressed {
+    background-color: rgb(0, 113, 184);
+}</string>
+               </property>
                <property name="text">
                 <string>Load Picks</string>
                </property>
@@ -164,21 +200,226 @@
           </layout>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QComboBox" name="Toggele_mode"/>
+        <item row="6" column="1">
+         <widget class="QComboBox" name="Toggele_mode">
+          <property name="styleSheet">
+           <string notr="true">QComboBox {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: rgb(254, 146, 35);
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/down-arrow.png);
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    selection-background-color: rgb(254, 146, 35);
+    border: 1px solid #555;
+}</string>
+          </property>
+          <property name="placeholderText">
+           <string>Color Palet</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <layout class="QVBoxLayout" name="Picks_layout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>14</number>
+          </property>
+          <property name="rightMargin">
+           <number>30</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QTableWidget" name="Picks_table_widget">
+            <column>
+             <property name="text">
+              <string>Trace</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Time</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Pick type</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="Picks_buttoms_layout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="Delite_one_buttom">
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: rgb(242, 110, 2);
+}
+QPushButton:pressed {
+    background-color: rgb(0, 113, 184);
+}</string>
+              </property>
+              <property name="text">
+               <string>Delete Pick</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="Delite_all_buttom">
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: rgb(242, 110, 2);
+}
+QPushButton:pressed {
+    background-color: rgb(0, 113, 184);
+}</string>
+              </property>
+              <property name="text">
+               <string>Delete All</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="Save_Picks_buttom">
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: rgb(242, 110, 2);
+}
+QPushButton:pressed {
+    background-color: rgb(0, 113, 184);
+}</string>
+            </property>
+            <property name="text">
+             <string>Save picks as .json</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="1">
+         <widget class="QGroupBox" name="PIcks_box">
+          <property name="styleSheet">
+           <string notr="true"> QGroupBox {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}</string>
+          </property>
+          <property name="title">
+           <string>Picks avilabel</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
+          </layout>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QListWidget" name="Log_line"/>
+        </item>
+        <item row="8" column="1">
+         <widget class="QPushButton" name="show_log_buttom">
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border-radius: 5px;
+}
+
+QPushButton:hover {
+    background-color: rgb(242, 110, 2);
+}
+QPushButton:pressed {
+    background-color: rgb(0, 113, 184);
+}</string>
+          </property>
+          <property name="text">
+           <string>Show log</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="Settings_list_label">
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="Plotting_Page">
        <attribute name="title">
-        <string/>
+        <string>Plotting Page</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="spacing">
          <number>2</number>
         </property>
         <property name="sizeConstraint">
-         <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+         <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
         </property>
         <property name="leftMargin">
          <number>2</number>
@@ -187,7 +428,7 @@
          <number>2</number>
         </property>
         <property name="rightMargin">
-         <number>2</number>
+         <number>1</number>
         </property>
         <property name="bottomMargin">
          <number>2</number>
@@ -206,7 +447,36 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="Picks_choose"/>
+              <widget class="QComboBox" name="Picks_choose">
+               <property name="styleSheet">
+                <string notr="true">QComboBox {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: rgb(254, 146, 35);
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/down-arrow.png);
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: rgb(254, 146, 35);
+    color: white;
+    selection-background-color: rgb(254, 146, 35);
+    border: 1px solid #555;
+}</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>

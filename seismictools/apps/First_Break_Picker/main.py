@@ -62,7 +62,7 @@ class FirstBreakPicker(QMainWindow):
         """Настраивает элементы управления (выпадающие списки)"""
         # Режимы отображения (палитры)
         map_modes = self.ui.Toggele_mode
-        map_modes.addItems(['seismic', 'viridis', 'CET-L1', 'inferno', 'magma'])
+        map_modes.addItems(['seismic', 'viridis', 'CET-L1',  'inferno', 'magma'])
         map_modes.currentTextChanged.connect(self.toggle_display_mode)
 
         # Типы пиков
