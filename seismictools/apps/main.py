@@ -1,133 +1,247 @@
 import sys
-import pyqtgraph as pg
-import numpy as np
-from PySide6 import QtWidgets, QtCore
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QStatusBar
-from PySide6.QtCore import Qt, QObject, Signal, Slot, QThreadPool
+import os
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QListWidgetItem
+from PySide6.QtCore import QThreadPool
 
-from seismictools.apps.UI.UI_Designer.Designer_Apps_ui import Ui_MainWindow
+from seismictools.apps.UI.UI_Designer.Designer_Apps_Seismic_ui import Ui_MainWindow
 from seismictools.apps.Controller.WorkerReader import WorkerReader
 from seismictools.apps.Controller.WorkerFilter import WorkerFilter
+
 from seismictools.apps.UI.ViewWidgets.PlotWidgets import SeismicPlotWidget
 
 class BandPassApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
+        """
+        Инициализирует приложение и его компоненты.
+        """
         super(BandPassApp, self).__init__()
         self.threadpool = QThreadPool()
         self.setupUi(self)
 
-        self.ui = Ui_MainWindow()
+        icon_path = os.path.join(os.path.dirname(__file__), "icon_app.png")
+        self.setWindowIcon(QIcon(icon_path))
 
-        self.lineEdit.setReadOnly(True)
+        self.file_data = {}
+        self.actual_file_path = None
+        self.listWidget_File.currentItemChanged.connect(self.select_file)
+        self.comboBox_for_typeFilter.currentTextChanged.connect(self.filter_type)
+        self.plot_widget = None
 
-        self.pushButton_load.clicked.connect(self.load_file)
+        self.pushButton_load.clicked.connect(self.load_files)
         self.pushButton_clear.clicked.connect(self.clear_all)
         self.pushButton_apply.clicked.connect(self.apply_filter)
         self.pushButton_reset.clicked.connect(self.reset_plot)
 
-        self.original_data = None
-
-        self.statusBar: QStatusBar = self.statusBar
-
-    def connect_buttons(self):
-        """Подключение кнопок"""
-        self.pushButton_load.clicked.connect(self.load_file)
-        self.pushButton_clear.clicked.connect(self.clear_all)
-        self.pushButton_apply.clicked.connect(self.apply_filter)
-        self.pushButton_reset.clicked.connect(self.reset_plot)
-
-    def clear_layout(self, layout):
-        while layout.count():
-            item = layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-
-    def load_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Выберите SEGY файл", "", "SEGY Files (*.sgy *.segy)"
-        )
-        if not file_path:
+    #Всё для загрузки и выбора файлов
+    def select_file(self, actual):
+        """
+        Обрабатывает смену выбранного файла в списке.
+        Устанавливает текущий путь к файлу и вставляет новое изображение в поле отрисовки сигнала.
+        """
+        if actual is None:
             return
-
-        self.statusBar.showMessage("Загрузка файла...", 0)
-        worker = WorkerReader(file_path)
-        worker.signals.result.connect(self.on_load_success)
-        worker.signals.error.connect(self.on_load_error)
-        worker.signals.message.connect(self.on_load_message)
-        QThreadPool.globalInstance().start(worker)
-
-    def on_load_message(self, msg):
-        self.statusBar.showMessage(msg, 4000)
-
-    def on_load_success(self, data, file_path):
-        self.original_data = data
-        self.lineEdit.setText(file_path.split("/")[-1])
+        file_path = actual.toolTip()
+        self.actual_file_path = file_path
         self.update_plot()
 
-    def on_load_error(self, error_msg):
-        self.statusBar.showMessage(f"Ошибка: {error_msg}", 6000)
-        QMessageBox.critical(self, "Ошибка", error_msg)
-
-    def apply_filter(self):
-        if self.original_data is None:
-            self.statusBar.showMessage("Сначала загрузите файл!", 3000)
+    def load_files(self):
+        """
+        Открывает проводник для выбора SEGY-файлов.
+        Добавляет новые файлы в список и запускает их фоновую загрузку через WorkerReader.
+        Игнорируется повторная загрузка уже добавленного файла.
+        """
+        file_paths, _ = QFileDialog.getOpenFileNames(
+            self, "Выберите SEGY файлы", "", "SEGY Files (*.sgy *.segy)"
+        )
+        if not file_paths:
             return
 
-        # Получаем параметры из UI
-        filter_type = self.comboBox.currentText()
+        for path in file_paths:
+            if path in self.file_data:
+                self.event_log(f"Файл уже загружен: {os.path.basename(path)}")
+                continue
+
+            item = QListWidgetItem(os.path.basename(path))
+            item.setToolTip(path)
+            self.listWidget_File.addItem(item)
+            self.file_data[path] = {"original": None, "filtered": None}
+
+            self.event_log(f"Загрузка: {os.path.basename(path)}")
+            worker = WorkerReader(path)
+            worker.signals.result.connect(self.load_success)
+            worker.signals.error.connect(self.load_error)
+            worker.signals.message.connect(self.event_log)
+            self.threadpool.start(worker)
+
+    # Всё для отображения сообщений (в частности - ошибок)
+    def load_success(self, data, file_path: str):
+        """
+        Обрабатывает "успешную" загрузку данных.
+        Сохраняет исходный сигнал и временной шаг "dt", а так же вычисляет и выводит частоту дискретизации "fs".
+        Если файл первый — делает его активным и обновляет график.
+        """
+        if data is None:
+            self.event_log(f"Ошибка: данные не загружены для {os.path.basename(file_path)}")
+            return
+
+        self.file_data[file_path]["original"] = data.data
+        self.file_data[file_path]["dt"] = data.dt
+        self.event_log(f"Загружен файл '{os.path.basename(file_path)}' (fs = {1000000.0/data.dt:.1f} Гц)") #сохраняем как 2D-данные
+
+        if self.actual_file_path is None:
+            self.actual_file_path = file_path
+            self.listWidget_File.setCurrentRow(0)
+            self.update_plot()
+
+    def load_error(self, error_msg: str):
+        """
+        Обрабатывает ошибку при загрузке файла: выводит сообщение в "Журнал событий" и показывает модальное окно с ошибкой.
+        """
+        self.event_log(f"Ошибка: {error_msg}")
+        QMessageBox.critical(self, "Ошибка", error_msg)
+
+    #Всё для применения фильтра
+    def apply_filter(self):
+        """
+        Запускает фоновое применение цифрового фильтра (bandpass/lowpass/highpass) к данным выбранного файла.
+        Проверяет корректность частот, вычисляет частоту дискретизации "fs" из временного шага "dt" и передаёт задачу в WorkerFilter.
+        """
+        if self.actual_file_path is None:
+            self.event_log("Сначала загрузите файл!")
+            return
+
+        orig_data = self.file_data[self.actual_file_path]["original"]
+
+        if orig_data is None:
+            self.event_log("Данные не загружены!")
+            return
+
+        filter_type = self.comboBox_for_typeFilter.currentText()
         order = self.spinBox.value()
-        freq_min = int(self.lineEdit_2.text()) if self.lineEdit_2.text() else 10
-        freq_max = int(self.lineEdit_3.text()) if self.lineEdit_3.text() else 50
+
+        try:
+            freq_min = int(self.lineEdit_forMin.text()) if self.lineEdit_forMin.text() else 10
+            freq_max = int(self.lineEdit_forMax.text()) if self.lineEdit_forMax.text() else 50
+        except ValueError:
+            self.event_log("Ошибка: частоты должны быть числами")
+            return
 
         if filter_type == "bandpass" and freq_min >= freq_max:
-            self.statusBar.showMessage("Ошибка: min < max", 5000)
+            self.event_log("Ошибка: min частота должна быть < max")
             return
 
+        self.event_log(f"Применение фильтра к {os.path.basename(self.actual_file_path)}...")
+
+        dt = self.file_data[self.actual_file_path]["dt"]
+        fs = 1000000.0/dt
         worker = WorkerFilter(
-            data=self.original_data,
+            type_filter=filter_type,
+            data=orig_data,
             low_freq=freq_min,
             high_freq=freq_max,
-            fs=1000,
+            fs=fs,
             order=order
         )
-        worker.signals.result.connect(self.on_filter_success)
-        worker.signals.error.connect(self.on_filter_error)
-        worker.signals.message.connect(self.on_filter_message)
-        QThreadPool.globalInstance().start(worker)
+        worker.signals.result.connect(self.filter_success)
+        worker.signals.error.connect(self.load_error)
+        worker.signals.message.connect(self.event_log)
+        self.threadpool.start(worker)
 
-    def on_filter_message(self, msg):
-        self.statusBar.showMessage(msg, 4000)
+    def filter_type(self, filter_type: str):
+        """
+        Обновляет поля ввода в зависимости от типа фильтра.
+        """
+        dt = self.file_data[self.actual_file_path]["dt"]
+        fs = 1000000.0 / dt if dt > 0 else 1000
+        nyquist_freq = int(fs / 2)
+        if filter_type == "bandpass":
+            self.lineEdit_forMin.setReadOnly(False)
+            self.lineEdit_forMax.setReadOnly(False)
+        elif filter_type == "lowpass":
+            self.lineEdit_forMin.setText("0")
+            self.lineEdit_forMin.setReadOnly(True)
+            self.lineEdit_forMax.setReadOnly(False)
+        elif filter_type == "highpass":
+            self.lineEdit_forMax.setText(str(nyquist_freq))
+            self.lineEdit_forMax.setReadOnly(True)
+            self.lineEdit_forMin.setReadOnly(False)
 
-    def on_filter_success(self, filtered_data):
-        self.filtered_data = filtered_data
+    def filter_success(self, filtered_data):
+        """
+        Уведомляет об успешном завершение фильтрации.
+        Сохраняет отфильтрованные данные и обновляет график.
+        """
+        if filtered_data is None or self.actual_file_path is None:
+            self.event_log("Ошибка фильтрации")
+            return
+
+        self.file_data[self.actual_file_path]["filtered"] = filtered_data
+        self.event_log("Фильтр успешно применён")
         self.update_plot()
 
-    def on_filter_error(self, error_msg):
-        self.statusBar.showMessage(f"Ошибка: {error_msg}", 6000)
-        QMessageBox.critical(self, "Ошибка", error_msg)
-
-    def clear_layout(self, layout):
-        while layout.count():
-            item = layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-
+    #Всё для отрисовки и очистки программы
     def update_plot(self):
-        from seismictools.apps.UI.ViewWidgets.PlotWidgets import SeismicPlotWidget
-        self.clear_layout(self.plotLayout)
-        plot_widget = SeismicPlotWidget(self.original_data, self.filtered_data)
-        self.plotLayout.addWidget(plot_widget)
+        """
+        Обновляет график: удаляет старый виджет (если есть) и создаёт новый, с оригинальными и отфильтрованными данными (когда применим фильтр).
+        """
+        if self.plot_widget:
+            self.plot_widget.deleteLater()
+            self.plot_widget = None
+
+        if self.actual_file_path is None:
+            return
+
+        orig = self.file_data[self.actual_file_path]["original"]
+        filt = self.file_data[self.actual_file_path]["filtered"]
+
+        if orig is None:
+            return
+        self.plot_widget = SeismicPlotWidget(orig, filt)
+        self.verticalLayout_for_plotgraf.addWidget(self.plot_widget)
 
     def clear_all(self):
-        self.original_data = None
-        self.filtered_data = None
-        self.lineEdit.setText("")
+        """
+        Полностью сбрасывает состояние программы: очищает данные, удаляет список файлов и график(-и), сообщает об "очистке".
+        """
+        self.file_data.clear()
+        self.actual_file_path = None
+        self.listWidget_File.clear()
+
         self.update_plot()
+        self.event_log("Все данные очищены")
 
     def reset_plot(self):
-        self.filtered_data = None
+        """
+        Сбрасывает отфильтрованные данные И параметры фильтра к начальному состоянию.
+        """
+        if self.actual_file_path is None:
+            return
+        self.file_data[self.actual_file_path]["filtered"] = None
+
+        self.comboBox_for_typeFilter.setCurrentText("bandpass")
+        self.spinBox.setValue(1)
+        self.lineEdit_forMin.clear()
+        self.lineEdit_forMax.clear()
+
         self.update_plot()
-        self.statusBar.showMessage("Фильтр сброшен", 3000)
+        self.event_log("Фильтр сброшен")
+
+    def event_log(self, message: str): # Журнал событий
+        """
+        Записывает событие в (Журнал событий)
+        """
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        color = "lightgreen"
+        if "Ошибка" in message or "ошибка" in message:
+            color = "red"
+        elif "Загрузка" in message or "фильтр" in message:
+            color = "yellow"
+        self.textBrowser.append(f"<font color='{color}'>[{timestamp}] {message}</font>")
+        self.textBrowser.verticalScrollBar().setValue(
+            self.textBrowser.verticalScrollBar().maximum()
+        )
 
 def main():
     app = QApplication(sys.argv)
