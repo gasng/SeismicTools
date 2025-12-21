@@ -15,7 +15,7 @@ class WorkerSignals(QObject):
     error = Signal(str)
     progress = Signal(int)
     message = Signal(str)
-    result = Signal(object)
+    result = Signal(object, str)
 
 class WorkerReader(QRunnable):
     def __init__(self, file_path):
@@ -26,26 +26,17 @@ class WorkerReader(QRunnable):
     def run(self):
         """
         Выполняет чтение сейсмического файла SEG-Y в фоновом потоке.
-
-        В случае успеха:
-        - отправляется сообщение об успешной загрузке
-        - данные передаются через сигнал result
-
-        В случае ошибки:
-        - текст ошибки отправляется через сигнал error
-        - result получает значение None
         """
         try:
-            reader = ReaderDataSeicmic()
             # Считываем наши данные
-            data = reader.read_segy(self.file_path)
+            data = ReaderDataSeicmic.read_segy(self.file_path)
 
             msg = 'The file ' + self.file_path + ' has been read successfully'
             self.signals.message.emit(msg)
-            self.signals.result.emit(data)
+            self.signals.result.emit(data, self.file_path)
         except Exception as exc:
-            error_msg = str(exc)
+            error_msg = "Error reading the file " + self.file_path + ": " + str(exc)
             self.signals.error.emit(error_msg)
-            self.signals.result.emit(None)
+            self.signals.result.emit(None, self.file_path)
         finally:
             self.signals.finished.emit()

@@ -379,7 +379,8 @@ class Ui_MainWindow(object):
         self.spinBox.setEnabled(True)
         sizePolicy3.setHeightForWidth(self.spinBox.sizePolicy().hasHeightForWidth())
         self.spinBox.setSizePolicy(sizePolicy3)
-        self.spinBox.setMaximum(10)
+        self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(4)
 
         self.horizontalLayout_for_NFilter.addWidget(self.spinBox)
 
@@ -551,14 +552,15 @@ class Ui_MainWindow(object):
         self.dockWidget.setAllowedAreas(Qt.DockWidgetArea.BottomDockWidgetArea)
         self.dockWidgetContents = QWidget()
         self.dockWidgetContents.setObjectName(u"dockWidgetContents")
-        self.dockWidgetContents.setMinimumSize(QSize(0, 40))
-        self.dockWidgetContents.setMaximumSize(QSize(16777215, 80))
+        self.dockWidgetContents.setMinimumSize(QSize(0, 42))
+        self.dockWidgetContents.setMaximumSize(QSize(16777215, 200))
         self.textBrowser = QTextBrowser(self.dockWidgetContents)
         self.textBrowser.setObjectName(u"textBrowser")
         self.textBrowser.setGeometry(QRect(-1, 1, 1201, 191))
         sizePolicy4.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
         self.textBrowser.setSizePolicy(sizePolicy4)
         self.textBrowser.setMinimumSize(QSize(0, 0))
+        self.textBrowser.setMaximumSize(QSize(16777215, 200))
         self.dockWidget.setWidget(self.dockWidgetContents)
         MainWindow.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidget)
 

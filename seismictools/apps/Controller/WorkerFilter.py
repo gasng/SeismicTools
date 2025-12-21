@@ -24,9 +24,10 @@ class WorkerFilter(QRunnable):
     Воркер для применения полосового фильтра к сейсмическим данным в фоновом потоке.
     Обрабатывает трассы по одной, чтобы показывать прогресс и не блокировать окно запуска программы.
     """
-    def __init__(self, data, low_freq, high_freq, fs, order=4):
+    def __init__(self, data, type_filter, low_freq, high_freq, fs, order=4):
         super().__init__()
         self.data = data
+        self.type_filter = type_filter
         self.low_freq = low_freq
         self.high_freq = high_freq
         self.fs = fs
@@ -40,7 +41,7 @@ class WorkerFilter(QRunnable):
         """
         try:
             bp_filter = BandPassFilter(
-                type_filter='bandpass',
+                type_filter=self.type_filter,
                 freq=(self.low_freq, self.high_freq),
                 fs=self.fs,
                 order=self.order
@@ -49,29 +50,23 @@ class WorkerFilter(QRunnable):
             filtered_data = np.zeros_like(self.data, dtype=np.float64)
 
             # Ищем общее количество трасс для расчёта прогресса
-            n_ilines, n_xlines, n_samples = self.data.shape
-            total_traces = n_ilines * n_xlines
-            processed = 0
-            for i in range(n_ilines):
-                for j in range(n_xlines):
-                    # Сделаем временной разрез
-                    trace = self.data[i, j, :]
-                    filtered_trace = bp_filter.filter(trace)
-                    filtered_data[i, j, :] = filtered_trace
+            n_traces, n_time = self.data.shape
+            total_traces = n_traces
 
-                    # Обновляем прогресс (взял для примера в 100 трасс)
-                    processed += 1
-                    if processed % 100 == 0 or processed == total_traces:
-                        progress_percent = int(processed / total_traces * 100)
-                        self.signals.progress.emit(progress_percent)
+            for i in range(n_traces):
+                trace = self.data[i, :]
+                filtered_trace = bp_filter.filter(trace)
+                filtered_data[i, :] = filtered_trace
 
-            msg = 'Filtering complete: ' + total_traces + ' traces processed'
-            self.signals.message.emit(msg)
+                # Обновляем прогресс (взял для примера в 100 трасс)
+                if i % 100 == 99 or i == total_traces - 1:  # i начинается с 0
+                    self.signals.progress.emit(int(100 * (i + 1) / total_traces))
+
+            self.signals.message.emit(f'Filtering complete: {total_traces} traces processed')
             self.signals.result.emit(filtered_data)
 
         except Exception as exc:
-            error_msg = "Filtering error: " + str(exc)
-            self.signals.error.emit(error_msg)
+            self.signals.error.emit(f'Filtering error {str(exc)}')
             self.signals.result.emit(None)
         finally:
             self.signals.finished.emit()
