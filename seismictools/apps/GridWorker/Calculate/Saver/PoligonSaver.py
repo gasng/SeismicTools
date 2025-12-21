@@ -1,7 +1,14 @@
 import numpy as np
 def save_grd_file(file_path: str, data: np.ndarray, metadata: dict = None):
     """
-         Функия сохраняет массив данных в формат GRD
+        Функция сохраняет массив данных в формат GRD
+        file_path (str): Путь для сохранения GRD-файла
+        data (numpy.ndarray): Двумерный массив числовых данных
+        metadata (dict): Словарь с метаданными
+        Должен содержать следующие ключи:
+        'xllcorner' (float): X-координата нижнего левого угла
+        'yllcorner' (float): Y-координата нижнего левого угла
+        'cellsize' (float): Размер ячейки в единицах координат
     """
     nrows, ncols = data.shape
 

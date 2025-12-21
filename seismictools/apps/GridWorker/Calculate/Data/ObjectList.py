@@ -2,14 +2,14 @@ from PyQt5 import QtWidgets, QtCore
 
 class ObjectListManager:
     def __init__(self, list_widget: QtWidgets.QListWidget):
-        """
-            Функция управляет списком объектов в QListWidget.
-        """
         self.list_widget = list_widget
 
     def add_object(self, name: str, obj_type: str, polygon: list):
         """
-            Вункция добавляет объект в список с чекбоксом
+            Функция добавляет объект в список с чекбоксом
+            name (str): Имя объекта (отображается в списке).
+            obj_type (str): Тип объекта (channel/bar/other).
+            polygon (list): Список координат полигона в формате
         """
         item_text = f"{name} ({obj_type})"
         item = QtWidgets.QListWidgetItem(item_text)
@@ -24,13 +24,15 @@ class ObjectListManager:
 
     def clear_all(self):
         """
-            Фунция очищает весь список объектов
+            Функция очищает весь список объектов
         """
         self.list_widget.clear()
 
     def delete_selected(self):
         """
             Фукнция удаляет отмеченные галочкой объекты и возвращает количество удаленных
+            Удаление происходит с конца списка к началу, чтобы избежать
+            смещения индексов при последовательном удалении
         """
         indices_to_remove = []
         for i in range(self.list_widget.count()):
@@ -45,7 +47,7 @@ class ObjectListManager:
 
     def get_selected_objects(self):
         """
-            Возвращает список данных отмеченных объектов
+            Функция возвращает список данных отмеченных объектов
         """
         selected = []
         for i in range(self.list_widget.count()):

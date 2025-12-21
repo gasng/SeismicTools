@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
-from ..Calculate.Saver.PoligonSaver import save_grd_file
-from ..Calculate.Data.PolygonUtils import create_masked_array
-import os
+from seismictools.apps.GridWorker.Calculate.Saver.PoligonSaver import save_grd_file
+from seismictools.apps.GridWorker.Calculate.Data.PolygonMaska import create_masked_array
+
 
 class WorkerSaver:
     def __init__(self, original_array, metadata=None):
@@ -15,6 +15,12 @@ class WorkerSaver:
     def save_selected_objects(self, parent_widget, selected_objects, file_path):
         """
             Функция сохраняет выделенные объекты в GRD-файл
+            Создаёт маскированный массив, где только выделенные полигоны
+            содержат исходные значения, а всё остальное заменено на NaN
+
+            parent_widget (QWidget): Родительский виджет для диалогов ошибок
+            selected_objects (list): Список выделенных объектов
+            file_path (str): Путь для сохранения GRD-файла
 
         """
         if self.original_array is None:
@@ -44,9 +50,10 @@ class WorkerSaver:
             self.show_error(parent_widget, f"Ошибка сохранения:\n{str(e)}")
             return False
 
-    def get_save_path(self, parent) -> str:
+    def get_save_path(self, parent):
         """
             Функция открывает диалог выбора пути
+            parent (QWidget): Родительский виджет
         """
         path, _ = QtWidgets.QFileDialog.getSaveFileName(
             parent, "Сохранить выделенные объекты", "", "GRD Files (*.grd)"
@@ -55,7 +62,8 @@ class WorkerSaver:
 
     def show_error(self, parent, message):
         """
-            Функция для вывода ошибки
+            Функция отображает модальное окно ошибки
+            parent (QWidget): Родительский виджет
+            message (str): Текст сообщения об ошибке
         """
         QtWidgets.QMessageBox.critical(parent, "Ошибка", message)
-

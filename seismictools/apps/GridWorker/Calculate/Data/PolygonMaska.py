@@ -4,7 +4,11 @@ from matplotlib.path import Path
 
 def create_masked_array(original_array, selected_polygons, metadata=None):
     """
-        Фунция создаёт маску выделенных полигонов
+        Фунция создаёт маску выделенных полигонов, где только выделенные полигоны
+        содержат исходные значения, а всё остальное заменено на NaN
+        original_array (numpy.ndarray): Исходный двумерный массив данных
+        selected_polygons (list): Список полигонов для маскирования
+        metadata (dict): Словарь с метаданными GRD-файла.
     """
     if original_array is None or not selected_polygons:
         return np.full_like(original_array, np.nan) if original_array is not None else None

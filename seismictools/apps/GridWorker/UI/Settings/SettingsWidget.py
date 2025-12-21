@@ -47,7 +47,10 @@ class Ui_GridWorkerWindow(object):
 "QLabel {\n"
 "    color: rgb(60, 60, 200);\n"
 "    font-size: 14px;\n"
-"}")
+"}"
+"QPushButton:pressed {\n"
+"background-color: rgb(140, 138, 200);\n"
+"}\n")
         self.groupBox_load.setFlat(False)
         self.groupBox_load.setCheckable(False)
         self.groupBox_load.setObjectName("groupBox_load")
@@ -109,7 +112,9 @@ class Ui_GridWorkerWindow(object):
 "    color: rgb(60, 60, 200);\n"
 "    font-size: 14px;\n"
 "}\n"
-"")
+"QPushButton:pressed {\n"
+"   background-color: rgb(140, 138, 200);\n"
+"}\n")
         self.groupBox_select.setObjectName("groupBox_select")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.groupBox_select)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -132,7 +137,10 @@ class Ui_GridWorkerWindow(object):
 "border: 2px solid #888888;\n"
 "border-radius: 6px;\n"
 "margin-top: 3 px;\n"
-"padding: 3 px;")
+"padding: 3 px;"
+"QPushButton:pressed {\n"
+"background-color: rgb(140, 138, 200);\n"
+"}\n")
         self.listWidget_objects.setObjectName("listWidget_objects")
         self.verticalLayout_2.addWidget(self.splitter_5)
         self.pushButton_save = QtWidgets.QPushButton(self.splitter_3)
@@ -142,7 +150,10 @@ class Ui_GridWorkerWindow(object):
 "    border-radius: 8px;\n"
 "    padding: 8px;\n"
 "    font-size: 14px;\n"
-"}")
+"}"
+"QPushButton:pressed {\n"
+"background-color: rgb(140, 138, 200);\n"
+"}\n")
         self.pushButton_save.setObjectName("pushButton_save")
         self.horizontalLayout.addWidget(self.splitter_3)
         self.label_map = QtWidgets.QGraphicsView(self.centralwidget)

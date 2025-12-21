@@ -24,11 +24,12 @@ class PointManager(QObject):
     def _on_click(self, event):
         """
             Функция обработки кликов: одиночного и двойного
+            event (QGraphicsSceneMouseEvent): Событие клика мыши
         """
         if event.button() != QtCore.Qt.LeftButton:
             return
 
-        # Если полигон уже замкнут — сббрасываем только текущий
+        # Если полигон уже замкнут — сбрасываем только текущий
         if self.is_polygon_closed:
             self.clear_current_polygon()
 
@@ -55,7 +56,11 @@ class PointManager(QObject):
 
     def _find_closest_point(self, click_pos, view_box, threshold=10):
         """
-            Функция поиска ближайшей точки
+            Функция поиска ближайшей точки к указанной позиции клика
+            click_pos (QPointF): Позиция клика в координатах сцены
+            view_box (ViewBox): ViewBox для преобразования координат
+            threshold (int): Максимальное расстояние в пикселях
+            для считания точки "близкой". По умолчанию 10.
         """
         if not self.points:
             return None
@@ -72,7 +77,9 @@ class PointManager(QObject):
 
     def add_point(self, x, y):
         """
-            Фунция добавления точки и обновления линии
+            Функция добавления точки и обновления линии
+            x (float): X-координата точки в системе координат данных
+            y (float): Y-координата точки в системе координат данных
         """
         self.points.append((x, y))
         self._update_plot()
@@ -80,7 +87,8 @@ class PointManager(QObject):
 
     def remove_point(self, index):
         """
-            Функция удаления точки и обновления линии
+            Функция удаления точки по индексу и обновления линии
+            index (int): Индекс удаляемой точки
         """
         if 0 <= index < len(self.points):
             del self.points[index]
@@ -91,7 +99,7 @@ class PointManager(QObject):
             Функция, замыкающая полигон
         """
         if len(self.points) < 3:
-            return  # Нужно минимум 3 точки
+            return
 
         self.is_polygon_closed = True
         self._update_plot()
@@ -100,7 +108,7 @@ class PointManager(QObject):
 
     def _update_plot(self):
         """
-            Функция обновления точки и линии
+            Функция обновляет текущий полигон при его изменении
         """
         if not self.points:
             self._clear_plot_items()
@@ -136,10 +144,15 @@ class PointManager(QObject):
 
     def add_saved_polygon(self, polygon: list, color=(0, 255, 0)):
         """
-        Функция добавляет сохранённый полигон на карту
-
+            Функция добавляет сохранённый полигон на карту
+            polygon (list): Список координат полигона
+            color (tuple): Цвет линии в формате (R, G, B)
         """
         if len(polygon) < 2:
+            return
+
+        if not hasattr(self, 'plot_widget') or not self.plot_widget:
+            print("Предупреждение: нет виджета для отрисовки")
             return
 
         # Замыкаем полигон
@@ -159,7 +172,7 @@ class PointManager(QObject):
 
     def _clear_plot_items(self):
         """
-            Функция удаления всех графических элементов
+            Функция удаления графических элементов текущего полигона
         """
         if self.scatter_plot:
             self.plot_widget.removeItem(self.scatter_plot)
@@ -189,7 +202,7 @@ class PointManager(QObject):
 
     def get_polygon(self):
         """
-            Фунция возвращает координаты полигона или None
+            Функция возвращает координаты полигона или None
         """
         if self.is_polygon_closed and len(self.points) >= 3:
             return self.points.copy()

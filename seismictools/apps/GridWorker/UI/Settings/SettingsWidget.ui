@@ -38,6 +38,9 @@
     border-radius: 8px;
 	padding: 8px;
 }
+QPushButton:pressed {
+    background-color: rgb(140, 138, 200);  /* Темнее */
+}
 QGroupBox {
     background-color: rgb(226, 227, 255);
     font-weight: bold;
@@ -137,6 +140,9 @@ padding: 3 px;</string>
     color: white;
     border-radius: 8px;
 }
+QPushButton:pressed {
+    background-color: rgb(140, 138, 200);  /* Темнее */
+}
 QGroupBox {
     background-color: rgb(226, 227, 255);
     font-weight: bold;
@@ -205,6 +211,9 @@ padding: 3 px;</string>
     border-radius: 8px;
     padding: 8px;
     font-size: 14px;
+}
+QPushButton:pressed {
+    background-color: rgb(140, 138, 200);  /* Темнее */
 }</string>
          </property>
          <property name="text">
