@@ -1,5 +1,5 @@
-from PySide6.QtCore import QObject, Signal, QRunnable, Slot
-from seismictools.apps.Calculate.Processing.Filter import BandPassFilter
+from PySide6.QtCore import QObject, Signal, QRunnable
+from seismictools.apps.Seismic_Filtering_BP.Calculate.Processing.Filter import BandPassFilter
 
 import numpy as np
 

@@ -4,11 +4,11 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QListWidgetItem
 from PySide6.QtCore import QThreadPool
 
-from seismictools.apps.UI.UI_Designer.Designer_Apps_Seismic_ui import Ui_MainWindow
-from seismictools.apps.Controller.WorkerReader import WorkerReader
-from seismictools.apps.Controller.WorkerFilter import WorkerFilter
+from seismictools.apps.Seismic_Filtering_BP.UI.UI_Designer.Designer_Apps_Seismic_ui import Ui_MainWindow
+from seismictools.apps.Seismic_Filtering_BP.Controller.WorkerReader import WorkerReader
+from seismictools.apps.Seismic_Filtering_BP.Controller.WorkerFilter import WorkerFilter
 
-from seismictools.apps.UI.ViewWidgets.PlotWidgets import SeismicPlotWidget
+from seismictools.apps.Seismic_Filtering_BP.UI.ViewWidgets.PlotWidgets import SeismicPlotWidget
 
 class BandPassApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
