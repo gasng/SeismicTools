@@ -3,7 +3,7 @@ name = "seismictools"
 version = "0.1.0"
 description = ""
 authors = ["gasng <kamashev41@gmail.com>"]
-readme = "seismictools/apps/Seismic_Filtering_BP/README.md"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.15"
