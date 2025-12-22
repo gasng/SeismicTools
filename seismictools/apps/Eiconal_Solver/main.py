@@ -17,6 +17,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
         self.current_model_path = None
         self.model_trajectories_names = dict()
         self.current_plot_widget = None
+        self.model = None
 
 
         self.solver_worker = None
@@ -183,7 +184,6 @@ class EiconalSolver(QtWidgets.QMainWindow):
 
 
     def update_initial_conditions(self, x0, y0, theta_rad):
-        print(f"update_initial_conditions called with: x0={x0:.6f}, y0={y0:.6f}, theta={np.degrees(theta_rad):.2f}°")
         self.ui.X_line.setText(f"{x0:.2f}")
         self.ui.Z_line.setText(f"{y0:.2f}")
         self.ui.theta_line.setText(f"{np.degrees(theta_rad):.0f}")
@@ -242,7 +242,7 @@ class EiconalSolver(QtWidgets.QMainWindow):
 
         if len(items) == 1:
             name = items[0].text()
-            trajectory = self.trajectories[name]
+            trajectory = self.model_trajectories_names[self.current_model_path][name]
             file_path, selected_filter = QFileDialog.getSaveFileName(
                 self,
                 'Сохранить массив как .npy',

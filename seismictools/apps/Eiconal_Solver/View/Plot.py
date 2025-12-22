@@ -16,6 +16,7 @@ class GatherPlotWidget(QWidget):
         self.is_drawing_vector = False
         self.theta = None
         self.vector = None
+        self.start_dot = None
         self.plot_model(path)
         self.create_callbacks()
 
@@ -110,21 +111,34 @@ class GatherPlotWidget(QWidget):
     def mouse_clicked(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
             pos = self.plot_widget.plotItem.vb.mapSceneToView(event.scenePos())
-            print(f"Mouse clicked at: x={pos.x():.4f}, y={pos.y():.4f}")
 
             if not self.is_drawing_vector:
                 x, y = pos.x(), pos.y()
                 self.start_point = (x, y)
-                print(f"Start point set to: ({x:.4f}, {y:.4f})")
                 self.is_drawing_vector = True
                 if self.vector is not None:
                     self.plot_widget.removeItem(self.vector)
-                self.vector = pg.PlotDataItem(x=[x, x],my=[y, y],npen=pg.mkPen('black', width=int(max(self.model.shape)/50)))
+                    self.plot_widget.removeItem(self.start_dot)
+                pen = pg.mkPen('black', width=2)
+                pen.setCosmetic(True)
+                self.vector = pg.PlotDataItem(x=[x, x], y=[y, y], pen=pen)
                 self.plot_widget.addItem(self.vector)
+                self.start_dot = pg.PlotDataItem(
+                    x=[self.start_point[0]],
+                    y=[self.start_point[1]],
+                    symbol='o',
+                    symbolSize=5,
+                    symbolBrush=pg.mkBrush('white'),
+                    symbolPen=pg.mkPen('black', width=1),
+                    pen=None
+                )
+                self.plot_widget.addItem(self.start_dot)
 
             else:
                 x, y = pos.x(), pos.y()
                 x0, y0 = self.start_point
+
+
                 dx = x - x0
                 dy = y - y0
                 self.theta = np.arctan2(dy, dx)
