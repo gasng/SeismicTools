@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Signal
-from Calculate.Reader.CubeReader import read_segy_cube
-from Calculate.Data.CubeData import CubeData
+from seismictools.apps.projectTraining_Data_preparer.Calculate.Reader.CubeReader import read_segy_cube
+from seismictools.apps.projectTraining_Data_preparer.Calculate.Data.CubeData import CubeData
 
 class WorkerReader(QObject):
     finished = Signal(object)  # CubeData instance

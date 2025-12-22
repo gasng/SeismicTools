@@ -4,13 +4,13 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QMessageBox, QWidget, QHBoxLayout
 )
 from PySide6.QtCore import QThread
-from UI.Settings.SettingsWidget import SettingsWidget
-from UI.View.ViewWidget import ViewWidget
-from UI.Dialogs.SavingDialog import SavingDialog
-from Calculate.Data.TraceData import TraceData
-from Controller.WorkerReader import WorkerReader
-from Controller.WorkerVisualization import WorkerVisualization
-from Controller.WorkerSaver import WorkerSaver
+from seismictools.apps.projectTraining_Data_preparer.UI.Settings.SettingsWidget import SettingsWidget
+from seismictools.apps.projectTraining_Data_preparer.UI.View.ViewWidget import ViewWidget
+from seismictools.apps.projectTraining_Data_preparer.UI.Dialogs.SavingDialog import SavingDialog
+from seismictools.apps.projectTraining_Data_preparer.Calculate.Data.TraceData import TraceData
+from seismictools.apps.projectTraining_Data_preparer.Controller.WorkerReader import WorkerReader
+from seismictools.apps.projectTraining_Data_preparer.Controller.WorkerVisualization import WorkerVisualization
+from seismictools.apps.projectTraining_Data_preparer.Controller.WorkerSaver import WorkerSaver
 
 
 class MainWindow(QMainWindow):
@@ -218,7 +218,8 @@ class MainWindow(QMainWindow):
         event.accept()
 
 
-if __name__ == "__main__":
+def main():
+    """Точка входа для запуска через poetry run"""
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()

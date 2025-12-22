@@ -23,7 +23,7 @@ cd C:\путь к проекту\SeismicTools
 ```
 2. Запустите main данной ветки проекта командой:
 ```
-%LocalAppData%\Programs\Python\Python312\python.exe -m poetry run training-data-preparer
+%LocalAppData%\Programs\Python\Python312\python.exe -m poetry run Training-Data-preparer
 ```
 3. В открывшемся интерфейсе:
 - Укажите путь к файлу сейсмического куба (формат .sgy) и нажмите «Загрузить».

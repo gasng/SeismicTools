@@ -20,3 +20,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 Example = 'seismictools.apps.example.main:main'
+Training-Data-Preparer = 'seismictools.apps.projectTraining_Data_preparer.main:main'
