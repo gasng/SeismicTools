@@ -62,15 +62,15 @@ class Ui_GridWorkerWindow(object):
         self.splitter_2.setObjectName("splitter_2")
         self.label = QtWidgets.QLabel(self.splitter_2)
         font = QtGui.QFont()
-        font.setPointSize(-1)
+        font.setPointSize(10)
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.lineEdit_filePath = QtWidgets.QLineEdit(self.splitter_2)
         self.lineEdit_filePath.setStyleSheet("background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #888888;\n"
 "border-radius: 6px;\n"
-"margin-top: 3 px;\n"
-"padding: 3 px;")
+"margin-top: 3px;\n"
+"padding: 3px;")
         self.lineEdit_filePath.setObjectName("lineEdit_filePath")
         self.verticalLayout.addWidget(self.splitter_2)
         self.splitter = QtWidgets.QSplitter(self.groupBox_load)
@@ -128,16 +128,17 @@ class Ui_GridWorkerWindow(object):
         self.pushButton_addObject.setObjectName("pushButton_addObject")
         self.label_2 = QtWidgets.QLabel(self.splitter_5)
         font = QtGui.QFont()
-        font.setPointSize(-1)
+        font.setPointSize(10)
         self.label_2.setFont(font)
         self.label_2.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.label_2.setObjectName("label_2")
         self.listWidget_objects = QtWidgets.QListWidget(self.splitter_5)
-        self.listWidget_objects.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border: 2px solid #888888;\n"
-"border-radius: 6px;\n"
-"margin-top: 3 px;\n"
-"padding: 3 px;"
+        self.listWidget_objects.setStyleSheet("QListWidget {\n"
+"   background-color: rgb(255, 255, 255);\n"
+"   border: 2px solid #888888;\n"
+"   border-radius: 6px;\n"
+"   padding: 3px;\n"
+"}\n"
 "QPushButton:pressed {\n"
 "background-color: rgb(140, 138, 200);\n"
 "}\n")
@@ -160,7 +161,7 @@ class Ui_GridWorkerWindow(object):
         self.label_map.setStyleSheet("background-color: rgb(255, 255, 255);\n"
 "border: 2px solid #888888;\n"
 "border-radius: 6px;\n"
-"margin-top: 3 px;\n"
+"margin-top: 3px;\n"
 "")
         self.label_map.setObjectName("label_map")
         self.horizontalLayout.addWidget(self.label_map)

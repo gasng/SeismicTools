@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
-from ..Settings.SettingsWidget import Ui_GridWorkerWindow
+from seismictools.apps.GridWorker.UI.Settings.SettingsWidget import Ui_GridWorkerWindow
 from seismictools.apps.GridWorker.Calculate.Reader.GrdReader import read_grd_file
 from seismictools.apps.GridWorker.Calculate.Data.PoligonData import PointManager
 from seismictools.apps.GridWorker.Calculate.Data.GridData import MapRenderer
@@ -7,6 +7,7 @@ from seismictools.apps.GridWorker.Calculate.Data.ObjectList import ObjectListMan
 from seismictools.apps.GridWorker.Controller.WorkerSaver import WorkerSaver
 from seismictools.apps.GridWorker.Controller.SessionManager import SessionManager
 import pyqtgraph as pg
+from pathlib import Path
 import os
 
 pg.setConfigOption('imageAxisOrder', 'row-major')
@@ -15,7 +16,9 @@ class ViewWidget(QtWidgets.QMainWindow):
         super().__init__()
         self.ui = Ui_GridWorkerWindow()
         self.ui.setupUi(self)
-        self.setWindowIcon(QtGui.QIcon("icon.ico"))
+        icon_path = Path(__file__).parent / "icon.ico"
+        if icon_path.exists():
+            self.setWindowIcon(QtGui.QIcon(str(icon_path)))
 
         # Заменяем QGraphicsView на PlotWidget
         self.plot_widget = pg.PlotWidget()
