@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal, QRunnable, Slot
+from PySide6.QtCore import QRunnable
 from seismictools.apps.NMO_Worker.Calculate.Spectrum import Spectrum
 from seismictools.apps.NMO_Worker.Controller.ReaderWorker import WorkerSignals
 
@@ -10,6 +10,7 @@ class SpectrumWorker(QRunnable):
         self.signals = WorkerSignals()
         self.offsets = offsets
         self.dt = dt
+
     def run(self):
         try:
             self.signals.message.emit("Начало расчёта спектра...")
@@ -18,4 +19,4 @@ class SpectrumWorker(QRunnable):
             self.signals.message.emit('Спектр построен')
             self.signals.result.emit(spectrum)
         except Exception as e:
-            self.signals.error.emit(e.args[0])
+            self.signals.error.emit(str(e))

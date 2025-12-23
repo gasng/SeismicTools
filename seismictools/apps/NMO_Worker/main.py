@@ -15,6 +15,7 @@ class Nmo_worker(QtWidgets.QWidget):
         self.threadpool = QtCore.QThreadPool()
         self.worker_reader = None
         self.worker_spectrum = None
+        self.worker_correction = None
         self.loaded_data = None
         self.plotWidget = None
         self.ui = Ui_NMOWidget()
@@ -27,7 +28,7 @@ class Nmo_worker(QtWidgets.QWidget):
         self.ui.pushButton_clearAll.clicked.connect(self.on_clear_all)
         self.ui.pushButton_undoPick.clicked.connect(self.on_undo_pick)
         self.ui.pushButton_applyCorrections.clicked.connect(self.apply_corrections)
-
+        self.ui.pushButton_clear.clicked.connect(self.on_clear_selected_file)
     def get_filepath(self):
 
         lw_items = [self.ui.Datalist.item(i).text() for i in range(self.ui.Datalist.count())]
@@ -56,9 +57,7 @@ class Nmo_worker(QtWidgets.QWidget):
         self.ui.MessageLine.setText(string)
 
     def clear_layout(self, layout: QLayout):
-        """
-        Clears all widgets and sub-layouts from a given QLayout.
-        """
+
         if layout is None:
             return
 
@@ -66,15 +65,15 @@ class Nmo_worker(QtWidgets.QWidget):
             item: QLayoutItem = layout.takeAt(0)
             if item.widget() is not None:
                 widget: QWidget = item.widget()
-                widget.deleteLater()  # Schedule widget for deletion
+                widget.deleteLater()
             elif item.layout() is not None:
-                self.clear_layout(item.layout())  # Recursively clear sub-layouts
-            del item  # Delete the layout item itself
+                self.clear_layout(item.layout())
+            del item
 
     def show_data(self, result):
         self.loaded_data = result
         self.clear_layout(self.ui.plotLayout)
-        my_plot_widget = GatherPlotWidget(result.data, dt=result.dt)  # ← передаём dt
+        my_plot_widget = GatherPlotWidget(result.data, dt=result.dt)
         self.ui.plotLayout.addWidget(my_plot_widget)
 
 
@@ -95,27 +94,40 @@ class Nmo_worker(QtWidgets.QWidget):
 
     def show_spectrum(self, spectrum_result):
         self.clear_layout(self.ui.plotLayout2)
-        self.plot_widget = SpectrumPlotWidget(
-            data=spectrum_result
-        )
+        self.plot_widget = SpectrumPlotWidget(data=spectrum_result)
         self.ui.plotLayout2.addWidget(self.plot_widget)
+
+        if self.ui.radioButton_pick.isChecked():
+            try:
+                self.plot_widget.plot_widget.scene().sigMouseClicked.connect(self.on_spectrum_click)
+            except (TypeError, RuntimeError):
+                pass
+
+    def on_clear_selected_file(self):
+        current_item = self.ui.Datalist.currentItem()
+        if current_item:
+            row = self.ui.Datalist.row(current_item)
+            self.ui.Datalist.takeItem(row)
+            self.ui.MessageLine.setText(f"Файл '{current_item.text()}' удалён")
+        else:
+            self.ui.MessageLine.setText("Нет выделенного файла для удаления")
 
     def on_pick_mode_toggled(self, checked):
         if checked:
-            # Включаем режим пикировки
-            self.plot_widget.plot_widget.scene().sigMouseClicked.connect(self.on_spectrum_click)
+            if hasattr(self, 'plot_widget') and self.plot_widget is not None:
+                try:
+                    self.plot_widget.plot_widget.scene().sigMouseClicked.connect(self.on_spectrum_click)
+                except (TypeError, RuntimeError):
+                    pass
             self.ui.MessageLine.setText("Режим пикировки активен")
-        else:
-            # Отключаем (если выключается, но другой кнопкой не включается)
-            self.plot_widget.plot_widget.scene().sigMouseClicked.disconnect(self.on_spectrum_click)
 
     def on_view_mode_toggled(self, checked):
+
         if checked:
-            # Включаем режим просмотра — отключаем пикировку
             try:
                 self.plot_widget.plot_widget.scene().sigMouseClicked.disconnect(self.on_spectrum_click)
             except TypeError:
-                pass  # Если не было подключения — игнорируем
+                pass
             self.ui.MessageLine.setText("Режим просмотра активен")
 
     def on_spectrum_click(self, event):
@@ -143,18 +155,16 @@ class Nmo_worker(QtWidgets.QWidget):
 
         self.plot_widget.add_pick(velocity, time)
 
-        self.ui.MessageLine.setText(f"Пик {row + 1}: t={time:.3f} с, v={velocity:.1f} м/с")
+        #self.ui.MessageLine.setText(f"Пик {row + 1}: t={time:.3f} с, v={velocity:.1f} м/с")
 
     def on_clear_all(self):
-        # Очищаем таблицу
+
         self.ui.tableWidget_picks.clearContents()
         self.ui.tableWidget_picks.setRowCount(0)
 
-        # Очищаем данные точек
         self.plot_widget.scatter_data_x.clear()
         self.plot_widget.scatter_data_y.clear()
 
-        # Удаляем ScatterPlotItem, если он есть
         if self.plot_widget.scatter_plot_item is not None:
             self.plot_widget.plot_widget.removeItem(self.plot_widget.scatter_plot_item)
             self.plot_widget.scatter_plot_item = None
@@ -167,10 +177,8 @@ class Nmo_worker(QtWidgets.QWidget):
             self.ui.MessageLine.setText("Нет пиков для отмены")
             return
 
-        # Удаляем последнюю строку из таблицы
         self.ui.tableWidget_picks.removeRow(row_count - 1)
 
-        # Удаляем последнюю точку из scatter_data
         if len(self.plot_widget.scatter_data_x) > 0:
             self.plot_widget.scatter_data_x.pop()
             self.plot_widget.scatter_data_y.pop()
@@ -189,7 +197,6 @@ class Nmo_worker(QtWidgets.QWidget):
             self.ui.MessageLine.setText("Сначала загрузите данные!")
             return
 
-        # Получаем данные из таблицы
         rows = self.ui.tableWidget_picks.rowCount()
         if rows == 0:
             self.ui.MessageLine.setText("Нет пиков для построения закона")
@@ -214,31 +221,25 @@ class Nmo_worker(QtWidgets.QWidget):
             self.ui.MessageLine.setText("Не удалось прочитать данные из таблицы")
             return
 
-        # Сортируем по времени
         sorted_indices = np.argsort(times)
         times = np.array(times)[sorted_indices]
         velocities = np.array(velocities)[sorted_indices]
 
-        # Интерполяция и экстраполяция
         nt = self.loaded_data.data.shape[0]
         dt = self.loaded_data.dt
-        t_full = np.arange(nt) * dt  # полный временной ряд
+        t_full = np.arange(nt) * dt
 
-        # Используем интерполяцию с экстраполяцией на концах
-        # Для значений вне диапазона — берём ближайшее значение (nearest)
         from scipy.interpolate import interp1d
         interp_func = interp1d(
             times,
             velocities,
             kind='linear',
-            fill_value="extrapolate"  # ← можно заменить на "nearest", если нужно фиксировать крайние значения
+            fill_value="extrapolate"
         )
         law = interp_func(t_full)
 
-        # Убедимся, что нет NaN или inf
         law = np.nan_to_num(law, nan=law[0], posinf=law[-1], neginf=law[0])
 
-        # Запускаем worker
         self.worker_correction = CorrectionWorker(
             data=self.loaded_data.data,
             law=law,
