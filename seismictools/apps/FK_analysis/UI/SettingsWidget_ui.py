@@ -147,7 +147,7 @@ class Ui_FK_Filtration(object):
     # setupUi
 
     def retranslateUi(self, FK_Filtration):
-        FK_Filtration.setWindowTitle(QCoreApplication.translate("FK_Filtration", u"MainWindow", None))
+        FK_Filtration.setWindowTitle(QCoreApplication.translate("FK_Filtration", u"FK-Filtration", None))
         self.ToolGB.setTitle(QCoreApplication.translate("FK_Filtration", u"\u041f\u0430\u043d\u0435\u043b\u044c \u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u043e\u0432", None))
         self.SeismicDataGB.setTitle(QCoreApplication.translate("FK_Filtration", u"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0434\u0430\u043d\u043d\u044b\u0445", None))
         self.label.setText(QCoreApplication.translate("FK_Filtration", u"\u0424\u043e\u0440\u043c\u0430\u0442: .sgy / .segy", None))
