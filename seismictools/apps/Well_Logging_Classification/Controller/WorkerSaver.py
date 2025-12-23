@@ -10,7 +10,7 @@ class WorkerSaverSignals(QObject):
     error = Signal(str)
     progress = Signal(int)
     message = Signal(str)
-    started = Signal()  # Добавляем этот сигнал!
+    started = Signal()
 
 class WorkerSaver(QRunnable):
     def __init__(self, filepath, well_data):
@@ -23,7 +23,7 @@ class WorkerSaver(QRunnable):
     @Slot()
     def run(self):
         try:
-            self.signals.started.emit()  # Отправляем сигнал начала
+            self.signals.started.emit()
             self.signals.message.emit("Сохранение файла...")
             self.signals.progress.emit(10)
             
@@ -31,7 +31,7 @@ class WorkerSaver(QRunnable):
             labels = self.well_data.class_labels
             if labels is not None:
                 for class_id in self.well_data.class_names:
-                    if class_id != 0:  # Пропускаем "неразмечено"
+                    if class_id != 0:
                         class_name = self.well_data.get_class_name(class_id)
                         curve_name = f"CLASS_{class_id:02d}_{class_name}"
                         class_data = (labels == class_id).astype(float)

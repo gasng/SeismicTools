@@ -8,11 +8,11 @@ logger = logging.getLogger(__name__)
 
 class WorkerVisualisationSignals(QObject):
     """Сигналы для WorkerVisualisation"""
-    finished = Signal(dict)        # Результат: {'x_data': ..., 'y_data': ..., 'title': ...}
-    error = Signal(str)            # Ошибка
-    progress = Signal(int)         # Прогресс
-    message = Signal(str)          # Сообщения
-    started = Signal()             # Начало работы
+    finished = Signal(dict) 
+    error = Signal(str)       
+    progress = Signal(int)         
+    message = Signal(str)       
+    started = Signal()           
 
 
 class WorkerVisualisation(QRunnable):
@@ -34,7 +34,6 @@ class WorkerVisualisation(QRunnable):
             self.signals.message.emit("Подготовка данных для визуализации...")
             self.signals.progress.emit(10)
             
-            # Получаем данные кривых
             x_data = self.well_data.get_curve(self.x_curve_name)
             y_data = self.well_data.get_curve(self.y_curve_name)
 
@@ -45,7 +44,6 @@ class WorkerVisualisation(QRunnable):
             
             self.signals.progress.emit(30)
             
-            # Очистка данных от NaN и бесконечных значений
             valid_mask = np.isfinite(x_data) & np.isfinite(y_data)
             x_clean = x_data[valid_mask]
             y_clean = y_data[valid_mask]
@@ -55,7 +53,6 @@ class WorkerVisualisation(QRunnable):
             if len(x_clean) == 0 or len(y_clean) == 0:
                 raise ValueError("Нет валидных данных для визуализации после очистки")
             
-            # Подготовка результата
             result = {
                 'x_data': x_clean,
                 'y_data': y_clean,

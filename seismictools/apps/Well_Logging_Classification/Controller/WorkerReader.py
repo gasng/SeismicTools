@@ -9,11 +9,11 @@ logger = logging.getLogger(__name__)
 
 class WorkerReaderSignals(QObject):
     """Сигналы для WorkerReader"""
-    finished = Signal(object)      # Успешное завершение с результатом (словарь с данными)
-    error = Signal(str)            # Ошибка
-    progress = Signal(int)         # Прогресс в процентах
-    message = Signal(str)          # Информационное сообщение
-    started = Signal()             # Начало работы
+    finished = Signal(object)
+    error = Signal(str)         
+    progress = Signal(int)     
+    message = Signal(str)          
+    started = Signal()
 
 
 class WorkerReader(QRunnable):
@@ -33,8 +33,6 @@ class WorkerReader(QRunnable):
             self.signals.message.emit(f"Загрузка файла: {self.filepath}")
             self.signals.progress.emit(10)
             
-            # Чтение LAS файла - получаем словарь с форматом:
-            # {'curves': {...}, 'metadata': {...}, 'filename': '...'}
             data_dict = WellLogReader.read_las_file(self.filepath)
             
             if data_dict is None:
@@ -60,7 +58,6 @@ class WorkerReader(QRunnable):
             
             data_dict['num_points'] = num_points
             
-            # Получаем метаданные если есть
             metadata = data_dict.get('metadata', {})
             
             self.signals.message.emit(
@@ -68,7 +65,6 @@ class WorkerReader(QRunnable):
             )
             self.signals.progress.emit(100)
             
-            # Возвращаем словарь с данными в оригинальном формате
             self.signals.finished.emit(data_dict)
             
         except Exception as e:
