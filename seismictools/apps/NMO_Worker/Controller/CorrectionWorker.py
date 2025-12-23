@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal, QRunnable, Slot
+from PySide6.QtCore import QRunnable
 from seismictools.apps.NMO_Worker.Calculate.Correction import Correction
 from seismictools.apps.NMO_Worker.Controller.ReaderWorker import WorkerSignals
 
