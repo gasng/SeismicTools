@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal, QRunnable, Slot
+from PySide6.QtCore import QObject, Signal, QRunnable
 from seismictools.apps.NMO_Worker.Calculate.Reader import SegYReader
 class WorkerSignals(QObject):
     finished = Signal()
@@ -14,12 +14,10 @@ class WorkerReader(QRunnable):
         self.filepath = filepath
         self.signals = WorkerSignals()
 
-    @Slot()
     def run(self):
         try:
             segy_data = SegYReader().read(filepath=self.filepath)
             self.signals.message.emit('Файл прочитан')
             self.signals.result.emit(segy_data)
         except Exception as e:
-            self.signals.error.emit(e.args[0])
-            self.signals.result.emit(None)
+            self.signals.error.emit(str(e))
