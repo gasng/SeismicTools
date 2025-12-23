@@ -33,11 +33,9 @@ class GatherPlotWidget(QWidget):
                 #x1 = max(0, j - trace_half)
                 #x2 = min(nx, j + trace_half + 1)
 
-                # RMS в прямоугольном окне
                 #window_data = self.data[t1:t2, x1:x2]
                 #rms = np.sqrt(np.mean(window_data ** 2) + 1e-12)
 
-                # Нормализация
                 #data_agc[i, j] = self.data[i, j] / rms
 
         #self.data = data_agc
@@ -54,33 +52,27 @@ class GatherPlotWidget(QWidget):
         self.setLayout(layout)
 
         nt, nx = self.data.shape
-        t_max = nt * self.dt  # или 0.004 * nt, если dt не передано
+        t_max = nt * self.dt
 
         self.image_item = pg.ImageItem(image=self.data.T)
         self.image_item.setRect(QtCore.QRectF(0, 0, nx, t_max))
 
         self.plot_widget.addItem(self.image_item)
 
-        # Настройка осей
-        x_axis = self.plot_widget.getAxis('bottom')
-        y_axis = self.plot_widget.getAxis('left')
+        self.plot_widget.setLabel('bottom', 'Трасса')
+        self.plot_widget.setLabel('left', 'Время, с')
 
-        x_axis.setLabel('Трасса')
-        y_axis.setLabel('Время, с')
 
         self.plot_widget.getViewBox().invertY(True)
-
-        # Устанавливаем диапазон
-        self.plot_widget.setXRange(0, nx)
-        self.plot_widget.setYRange(t_max, 0)  # от max к min (вверх-вниз)
+        self.plot_widget.setLimits(xMin=0, xMax=nx, yMin=0, yMax=t_max)
 
 
 class SpectrumPlotWidget(QWidget):
     def __init__(self, data, dt=0.002):
         super().__init__()
-        self.data = np.array(data)  # (nt, nv)
+        self.data = np.array(data)
         self.dt = dt
-        self.velocities = np.arange(100, 2500, 10)  # массив скоростей, если есть
+        self.velocities = np.arange(100, 2500, 10)
         self.plot_widget = None
         self.image_item = None
         self.scatter_plot_item = None
@@ -102,9 +94,7 @@ class SpectrumPlotWidget(QWidget):
         t_max = nt * self.dt
         vel_min, vel_max = self.velocities[0], self.velocities[-1]
 
-        # Создаём изображение и задаём его геометрию в физических координатах
-        minl, maxl = np.percentile(self.data, [90,100])
-        self.image_item = pg.ImageItem(image=self.data.T, levels=(minl, maxl))
+        self.image_item = pg.ImageItem(image=self.data.T)
         self.image_item.setRect(QtCore.QRectF(vel_min, 0, vel_max - vel_min, t_max))
 
         pos = [0.0, 0.5, 1.0]
@@ -124,11 +114,7 @@ class SpectrumPlotWidget(QWidget):
         self.plot_widget.setLimits(xMin=vel_min, xMax=vel_max, yMin=0, yMax=t_max)
 
     def add_pick(self, x, y):
-        """
-        Добавляет точку (x, y) на график.
-        :param x: скорость (м/с)
-        :param y: время (с)
-        """
+
         self.scatter_data_x.append(x)
         self.scatter_data_y.append(y)
 
