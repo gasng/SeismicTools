@@ -1,7 +1,7 @@
 import sys
 import json
 import numpy as np
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QFileDialog, QMessageBox,
     QTableWidgetItem, QListWidgetItem
@@ -14,12 +14,15 @@ from seismictools.apps.First_Break_Picker.Controller.WorkerReader import WorkerR
 from seismictools.apps.First_Break_Picker.UI.View.ViewWidget import ViewWidget
 
 
+
+
 class FirstBreakPicker(QMainWindow):
     def __init__(self):
         super().__init__()
         self.threadpool = QtCore.QThreadPool()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.log_messages = ['Session started']
 
         # Инициализация компонентов
         self._init_plot_widget()
@@ -57,6 +60,7 @@ class FirstBreakPicker(QMainWindow):
         self.ui.Load_Picks_buttom.clicked.connect(self.load_picks_from_json)
         self.ui.Delite_one_buttom.clicked.connect(self.delete_selected_pick)
         self.ui.Delite_all_buttom.clicked.connect(self.delete_all_picks)
+        self.ui.show_log_buttom.clicked.connect(self.export_log)
 
     def _setup_ui_controls(self):
         """Настраивает элементы управления (выпадающие списки)"""
@@ -79,7 +83,7 @@ class FirstBreakPicker(QMainWindow):
         filepath = self.ui.SGY_files_line.text().strip()
         if not filepath:
             filepath, _ = QFileDialog.getOpenFileName(
-                self, "Выбрать SGY-файл", "", "SGY Files (*.sgy *.segy)"
+                self, "Choose SGY-file", "", "SGY Files (*.sgy *.segy)"
             )
             if not filepath:
                 return
@@ -102,6 +106,24 @@ class FirstBreakPicker(QMainWindow):
         self.view_widget.clear()
         self.ui.SGY_files_line.clear()
         self.print_message('Files cleared')
+
+    def export_log(self):
+        filepath, _ = QFileDialog.getSaveFileName(
+            self, "Save log", "", "TXT FILE (*.txt)"
+        )
+        if not filepath:  # Пользователь нажал "Отмена"
+            return
+
+        if not filepath.endswith('.txt'):
+            filepath += '.txt'
+
+        try:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                for message in self.log_messages:
+                    f.write(str(message) + "\n")
+            self.add_to_log(f"Log saved: {filepath}")
+        except Exception as e:
+            self.add_to_log(f"Error in log saving: {str(e)}")
 
     # ===================================================================
     # УПРАВЛЕНИЕ ОТОБРАЖЕНИЕМ
@@ -147,7 +169,7 @@ class FirstBreakPicker(QMainWindow):
                     int(trace_item.text()) - 1 == trace_idx and
                     type_item.text() == pick_type):
                 self.ui.Picks_table_widget.removeRow(row)
-                self.add_to_log(f"Пик удалён: трасса {trace_idx + 1}, тип {pick_type}")
+                self.add_to_log(f"Pick deleted: trace {trace_idx + 1}, type {pick_type}")
                 break
 
     def on_picks_interpolated(self, pick_type: str, picks_list: list):
@@ -175,13 +197,13 @@ class FirstBreakPicker(QMainWindow):
     def delete_all_picks(self):
         """Удаляет все пики"""
         reply = QMessageBox.question(
-            self, "Подтверждение", "Удалить все пики?",
+            self, "Really?", "Delete all picks?",
             QMessageBox.Yes | QMessageBox.No
         )
         if reply == QMessageBox.Yes:
             self.view_widget.clear_all_picks()
             self.ui.Picks_table_widget.setRowCount(0)
-            self.add_to_log("Все пики удалены")
+            self.add_to_log("All picks exterminated")
 
     # ===================================================================
     # СОХРАНЕНИЕ И ЗАГРУЗКА ПИКОВ
@@ -190,7 +212,7 @@ class FirstBreakPicker(QMainWindow):
     def save_picks_to_json(self):
         """Сохраняет пики в JSON-файл"""
         if not self.view_widget.picks:
-            QMessageBox.warning(self, "Сохранение", "Нет пиков для сохранения!")
+            QMessageBox.warning(self, "Saving", "No picks to save!")
             return
 
         picks_data = {}
@@ -201,7 +223,7 @@ class FirstBreakPicker(QMainWindow):
             ]
 
         filepath, _ = QFileDialog.getSaveFileName(
-            self, "Сохранить пики", "", "JSON Files (*.json)"
+            self, "Save picks", "", "JSON Files (*.json)"
         )
         if not filepath:
             return
@@ -211,17 +233,17 @@ class FirstBreakPicker(QMainWindow):
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(picks_data, f, indent=2, ensure_ascii=False)
-            self.add_to_log(f"Пики сохранены: {filepath}")
-            QMessageBox.information(self, "Успех", f"Пики сохранены в:\n{filepath}")
+            self.add_to_log(f"Picks saved: {filepath}")
+            QMessageBox.information(self, "Congratulations", f"Picks saved to:\n{filepath}")
         except Exception as e:
-            error_msg = f"Ошибка сохранения: {str(e)}"
+            error_msg = f"Saving error: {str(e)}"
             self.add_to_log(error_msg)
-            QMessageBox.critical(self, "Ошибка", error_msg)
+            QMessageBox.critical(self, "Error", error_msg)
 
     def load_picks_from_json(self):
         """Загружает пики из JSON-файла"""
         filepath, _ = QFileDialog.getOpenFileName(
-            self, "Загрузить пики", "", "JSON Files (*.json)"
+            self, "Download", "", "JSON Files (*.json)"
         )
         if not filepath:
             return
@@ -239,13 +261,13 @@ class FirstBreakPicker(QMainWindow):
                     time_idx = pick["time"]
                     self.view_widget.add_pick(trace_idx, time_idx, pick_type)
 
-            self.add_to_log(f"Пики загружены: {filepath}")
-            QMessageBox.information(self, "Успех", "Пики загружены!")
+            self.add_to_log(f"Picks loaded: {filepath}")
+            QMessageBox.information(self, "Gotcha!", "Picks loaded!")
 
         except Exception as e:
-            error_msg = f"Ошибка загрузки: {str(e)}"
+            error_msg = f"Loading Error: {str(e)}"
             self.add_to_log(error_msg)
-            QMessageBox.critical(self, "Ошибка", error_msg)
+            QMessageBox.critical(self, "Error", error_msg)
 
     # ===================================================================
     # ОБРАБОТКА СООБЩЕНИЙ И ОШИБОК
@@ -254,14 +276,19 @@ class FirstBreakPicker(QMainWindow):
     def print_message(self, string: str):
         """Отображает информационное сообщение"""
         self.add_to_log(string)
+        self.log_messages.append(string)
+        self.ui.Log_line.scrollToBottom()
 
     def on_error(self, error_msg: str):
         """Обрабатывает ошибки"""
-        self.add_to_log(f"[ОШИБКА] {error_msg}")
+        self.add_to_log(f"[Error] {error_msg}")
+        self.log_messages.append(error_msg)
+        self.ui.Log_line.scrollToBottom()
 
     def add_to_log(self, message: str):
         """Добавляет сообщение в лог"""
         self.ui.Log_line.addItem(message)
+        self.log_messages.append(message)
         self.ui.Log_line.scrollToBottom()
 
 

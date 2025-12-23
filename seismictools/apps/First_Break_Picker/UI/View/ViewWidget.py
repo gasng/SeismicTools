@@ -104,9 +104,9 @@ class ViewWidget(QWidget):
             self.image_item.setLookupTable(colormap.getLookupTable())
 
             # Настраиваем оси
-            self.plot_widget.setLabel('bottom', 'Номер трассы')
-            self.plot_widget.setLabel('left', 'Время (отсчёты)')
-            self.plot_widget.setTitle("Тепловая карта сейсмограммы")
+            self.plot_widget.setLabel('bottom', 'Trace number')
+            self.plot_widget.setLabel('left', 'Time (отсчёты)')
+            self.plot_widget.setTitle("Seismogram Heat map")
 
 
         except Exception as e:
