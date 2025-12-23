@@ -40,7 +40,7 @@ class WorkerFilter(QRunnable):
         Применяет заданный цифровой фильтр (bandpass/lowpass/highpass) ко всем трассам
         во входном массиве self.data и возвращает отфильтрованный результат через сигналы.
         """
-        freq = None #изначально ничему не равно, так как получим значение от пользователя
+        freq = None
         try:
             try:
                 if self.type_filter == 'bandpass':
@@ -49,8 +49,8 @@ class WorkerFilter(QRunnable):
                     freq = float(self.high_freq)
                 elif self.type_filter == 'highpass':
                     freq = float(self.low_freq)
-            except ValueError as exc:
-                raise ValueError(f"Invalid frequency value: {exc}")
+            except ValueError as e:
+                raise ValueError(f"Invalid frequency value: {e}")
 
             bp_filter = BandPassFilter(
                 type_filter=self.type_filter,
@@ -58,21 +58,23 @@ class WorkerFilter(QRunnable):
                 fs=self.fs,
                 order=self.order
             )
+            # Тут будем хранить наш результат
+            filtered_data = np.zeros_like(self.data, dtype=np.float64)
 
-            filtered_data = np.zeros_like(self.data, dtype=np.float64) # переменная для хранения результата, должно быть размером с нашим исходным сигналом
-
-            n_traces = self.data.shape[0]
+            # Ищем общее количество трасс для расчёта прогресса
+            n_traces, n_time = self.data.shape
+            total_traces = n_traces
 
             for i in range(n_traces):
                 trace = self.data[i, :]
                 filtered_trace = bp_filter.filter(trace)
                 filtered_data[i, :] = filtered_trace
 
-                if i % 100 == 99 or i == n_traces - 1: # обновляем прогресс (взял для примера в 100 трасс) - чтобы не перегружать основной поток
-                                                       # проще говоря - ограничиваем частоту обновления
-                    self.signals.progress.emit(int(100 * (i + 1) / n_traces))
+                # Обновляем прогресс (взял для примера в 100 трасс)
+                if i % 100 == 99 or i == total_traces - 1:  # i начинается с 0
+                    self.signals.progress.emit(int(100 * (i + 1) / total_traces))
 
-            self.signals.message.emit(f'Filtering complete: {n_traces} traces processed')
+            self.signals.message.emit(f'Filtering complete: {total_traces} traces processed')
             self.signals.result.emit(filtered_data)
 
         except Exception as exc:

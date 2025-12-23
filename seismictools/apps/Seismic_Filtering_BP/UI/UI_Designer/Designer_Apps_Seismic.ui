@@ -286,7 +286,7 @@ QComboBox::down-arrow {
               <number>5</number>
              </property>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_for_file" stretch="1,2,1">
+              <layout class="QHBoxLayout" name="horizontalLayout_for_file" stretch="1,2,0">
                <property name="leftMargin">
                 <number>6</number>
                </property>
@@ -337,7 +337,7 @@ QComboBox::down-arrow {
                 </spacer>
                </item>
                <item>
-                <widget class="QListWidget" name="listWidget_File">
+                <widget class="QListWidget" name="listWidget_FileList">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>

@@ -20,10 +20,11 @@ class ReaderDataSeicmic:
         #Пытаюсь вытащить частоту дискритизации из .sgy файла....
         dt_for_fs = seg_file.bin[sio.BinField.Interval]
 
-        conver_to_sec = 1e-6
-        default_time = 1e-3
+        conver_to_sec = 1e-9
 
-        dt_for_fs_sec = dt_for_fs * conver_to_sec
-        if dt_for_fs_sec == 0:
-            dt_for_fs_sec = default_time
-        return SegYData(data=gather, dt=dt_for_fs_sec)
+        if dt_for_fs == 0:
+            dt_for_fs = conver_to_sec
+        return SegYData(data=gather, dt=dt_for_fs)
+
+
+

@@ -24,7 +24,7 @@ class BandPassApp(QMainWindow, Ui_MainWindow):
 
         self.file_data = {}
         self.actual_file_path = None
-        self.listWidget_File.currentItemChanged.connect(self.select_file)
+        self.listWidget_FileList.currentItemChanged.connect(self.select_file)
         self.comboBox_for_typeFilter.currentTextChanged.connect(self.filter_type)
         self.plot_widget = None
 
@@ -64,7 +64,7 @@ class BandPassApp(QMainWindow, Ui_MainWindow):
 
             item = QListWidgetItem(os.path.basename(path))
             item.setToolTip(path)
-            self.listWidget_File.addItem(item)
+            self.listWidget_FileList.addItem(item)
             self.file_data[path] = {"original": None, "filtered": None}
 
             self.event_log(f"Загрузка: {os.path.basename(path)}")
@@ -91,7 +91,7 @@ class BandPassApp(QMainWindow, Ui_MainWindow):
 
         if self.actual_file_path is None:
             self.actual_file_path = file_path
-            self.listWidget_File.setCurrentRow(0)
+            self.listWidget_FileList.setCurrentRow(0)
             self.update_plot()
 
     def load_error(self, error_msg: str):
@@ -206,7 +206,7 @@ class BandPassApp(QMainWindow, Ui_MainWindow):
         """
         self.file_data.clear()
         self.actual_file_path = None
-        self.listWidget_File.clear()
+        self.listWidget_FileList.clear()
 
         self.update_plot()
         self.event_log("Все данные очищены")

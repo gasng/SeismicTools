@@ -264,18 +264,17 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_for_file.addItem(self.horizontalSpacer_between_File_lineEdit)
 
-        self.listWidget_File = QListWidget(self.groupBox_LoadSEGY)
-        self.listWidget_File.setObjectName(u"listWidget_File")
-        sizePolicy1.setHeightForWidth(self.listWidget_File.sizePolicy().hasHeightForWidth())
-        self.listWidget_File.setSizePolicy(sizePolicy1)
-        self.listWidget_File.setMinimumSize(QSize(155, 35))
-        self.listWidget_File.setMaximumSize(QSize(120, 35))
+        self.listWidget_FileList = QListWidget(self.groupBox_LoadSEGY)
+        self.listWidget_FileList.setObjectName(u"listWidget_FileList")
+        sizePolicy1.setHeightForWidth(self.listWidget_FileList.sizePolicy().hasHeightForWidth())
+        self.listWidget_FileList.setSizePolicy(sizePolicy1)
+        self.listWidget_FileList.setMinimumSize(QSize(155, 35))
+        self.listWidget_FileList.setMaximumSize(QSize(120, 35))
 
-        self.horizontalLayout_for_file.addWidget(self.listWidget_File)
+        self.horizontalLayout_for_file.addWidget(self.listWidget_FileList)
 
         self.horizontalLayout_for_file.setStretch(0, 1)
         self.horizontalLayout_for_file.setStretch(1, 2)
-        self.horizontalLayout_for_file.setStretch(2, 1)
 
         self.verticalLayout_for_LoadSEGY.addLayout(self.horizontalLayout_for_file)
 
@@ -379,8 +378,7 @@ class Ui_MainWindow(object):
         self.spinBox.setEnabled(True)
         sizePolicy3.setHeightForWidth(self.spinBox.sizePolicy().hasHeightForWidth())
         self.spinBox.setSizePolicy(sizePolicy3)
-        self.spinBox.setMinimum(1)
-        self.spinBox.setMaximum(4)
+        self.spinBox.setMaximum(10)
 
         self.horizontalLayout_for_NFilter.addWidget(self.spinBox)
 
@@ -552,15 +550,14 @@ class Ui_MainWindow(object):
         self.dockWidget.setAllowedAreas(Qt.DockWidgetArea.BottomDockWidgetArea)
         self.dockWidgetContents = QWidget()
         self.dockWidgetContents.setObjectName(u"dockWidgetContents")
-        self.dockWidgetContents.setMinimumSize(QSize(0, 42))
-        self.dockWidgetContents.setMaximumSize(QSize(16777215, 200))
+        self.dockWidgetContents.setMinimumSize(QSize(0, 40))
+        self.dockWidgetContents.setMaximumSize(QSize(16777215, 80))
         self.textBrowser = QTextBrowser(self.dockWidgetContents)
         self.textBrowser.setObjectName(u"textBrowser")
         self.textBrowser.setGeometry(QRect(-1, 1, 1201, 191))
         sizePolicy4.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
         self.textBrowser.setSizePolicy(sizePolicy4)
         self.textBrowser.setMinimumSize(QSize(0, 0))
-        self.textBrowser.setMaximumSize(QSize(16777215, 200))
         self.dockWidget.setWidget(self.dockWidgetContents)
         MainWindow.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidget)
 
@@ -570,7 +567,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("Bandpass filter", u"Bandpass filter", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.groupBox_LoadSEGY.setTitle(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 SEGY", None))
         self.label_File.setText(QCoreApplication.translate("MainWindow", u"\u0424\u0430\u0439\u043b:", None))
         self.pushButton_load.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c", None))
