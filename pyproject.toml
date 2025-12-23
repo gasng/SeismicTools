@@ -12,6 +12,7 @@ numpy = "^2.3.5"
 segyio = "^1.9.13"
 pyqtgraph = "^0.14.0"
 scipy = "^1.16.3"
+numba = "^0.63.1"
 
 
 [build-system]
@@ -20,3 +21,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 Example = 'seismictools.apps.example.main:main'
+NMO_Worker = 'seismictools.apps.NMO_Worker.main:main'
