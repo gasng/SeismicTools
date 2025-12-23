@@ -2,6 +2,8 @@ import sys
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtGui import QIcon
+import os
 
 from seismictools.apps.FK_analysis.Controller.FkForwardWorker import FkForwardWorker
 from seismictools.apps.FK_analysis.Controller.FkInverseWorker import FkInverseWorker
@@ -17,6 +19,8 @@ class FK_filter(QtWidgets.QMainWindow):
         super(FK_filter, self).__init__()
         self.ui = Ui_FK_Filtration()
         self.ui.setupUi(self)
+        icon_path = os.path.join(os.path.dirname(__file__), "resources", "FK_icon.png")
+        self.setWindowIcon(QIcon(icon_path))
         self.apply_style()
         self.current_segy_data = None # Это наши сохраненные прочитанные данные
         self.current_fk_spectrum = None # Это сохраненные данные FK-преобразования
@@ -45,6 +49,14 @@ class FK_filter(QtWidgets.QMainWindow):
 
         # Подключаем клики по FK-графику
         self.ui.FkPW.scene().sigMouseClicked.connect(self.on_fk_click)
+
+        # Связываем ViewBox-ы
+        self.seismogram_viewbox = self.ui.SeismogramPW.plotItem.vb
+        self.seismogram_filtered_viewbox = self.ui.ResultPW.plotItem.vb
+        # Синхронизация по оси X
+        self.seismogram_viewbox.setXLink(self.seismogram_filtered_viewbox)
+        # Синхронизация по оси Y
+        self.seismogram_viewbox.setYLink(self.seismogram_filtered_viewbox)
 
 
     def get_filepath(self):
@@ -157,7 +169,7 @@ class FK_filter(QtWidgets.QMainWindow):
 
     def finish_selection(self):
         if self.polygon_selector.finish_selection():
-            points = self.polygon_selector.get_points()  # ← точки есть!
+            points = self.polygon_selector.get_points()
             if self.current_fk_spectrum is not None:
                 worker = PolygonMaskWorker(
                     points,
@@ -251,7 +263,7 @@ def main():
     window = FK_filter()
     window.show()
 
-    return app.exec_()
+    return app.exec()
 
 if __name__ == '__main__':
     main()
