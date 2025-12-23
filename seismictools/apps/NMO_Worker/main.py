@@ -9,6 +9,8 @@ from seismictools.apps.NMO_Worker.UI.Settings.NMOWidget_ui import  Ui_NMOWidget
 from seismictools.apps.NMO_Worker.View.SeismicPlot import GatherPlotWidget
 from seismictools.apps.NMO_Worker.View.SeismicPlot import SpectrumPlotWidget
 from seismictools.apps.NMO_Worker.Controller.CorrectionWorker import CorrectionWorker
+
+
 class Nmo_worker(QtWidgets.QWidget):
     def __init__(self):
         super(Nmo_worker, self).__init__()
@@ -29,6 +31,7 @@ class Nmo_worker(QtWidgets.QWidget):
         self.ui.pushButton_undoPick.clicked.connect(self.on_undo_pick)
         self.ui.pushButton_applyCorrections.clicked.connect(self.apply_corrections)
         self.ui.pushButton_clear.clicked.connect(self.on_clear_selected_file)
+
     def get_filepath(self):
 
         lw_items = [self.ui.Datalist.item(i).text() for i in range(self.ui.Datalist.count())]
@@ -75,7 +78,6 @@ class Nmo_worker(QtWidgets.QWidget):
         self.clear_layout(self.ui.plotLayout)
         my_plot_widget = GatherPlotWidget(result.data, dt=result.dt)
         self.ui.plotLayout.addWidget(my_plot_widget)
-
 
     def velocity_spectrum(self):
         if not hasattr(self, 'loaded_data'):
