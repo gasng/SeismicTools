@@ -11,56 +11,46 @@ class SegYData:
         self.dt = dt
 
 class SegYReader:
+
     @staticmethod
     def read(filepath, dx=30.0):
         with sio.open(filepath, "r", strict=False) as seg_file:
-            print(filepath)
             if filepath == "C:/Users/seshu/Downloads/Telegram Desktop/CPD.segy":
                 gather = np.array([seg_file.trace[i] for i in range(seg_file.tracecount)])
             else:
-                gather = np.array([seg_file.trace[i] for i in range(seg_file.tracecount)]).T
+                gather = np.stack([seg_file.trace[i] for i in range(seg_file.tracecount)]).T
             nx = gather.shape[1]
+            source_x = []
+            group_x = []
+            for i in range(seg_file.tracecount):
+                header = seg_file.header[i]
+                src_x = header[sio.TraceField.SourceX]
+                grp_x = header[sio.TraceField.GroupX]
+                source_x.append(src_x)
+                group_x.append(grp_x)
 
-            dt =  0.002
+            source_x = np.array(source_x)
+            group_x = np.array(group_x)
 
-            if filepath == "C:/Users/seshu/Downloads/Telegram Desktop/CPD.segy":
-                receiver_x = np.arange(nx) * dx
-                offsets = receiver_x
+            offsets = np.abs(group_x - source_x)
 
-            else:
-            # Приёмники: [-L, ..., -dx, 0, dx, ..., L]
-                if nx % 2 == 1:
-                    # Нечётное число трасс, есть трасса под источником
-                    receiver_x = np.arange(-(nx // 2), nx // 2 + 1) * dx
+            dt = seg_file.bin[sio.BinField.Interval] / 1_000_000.0
+            if dt != 0 or not dt:
+                dt = 0.002
+            if not source_x.any():
+                if filepath == "C:/Users/seshu/Downloads/Telegram Desktop/CPD.segy":
+                    receiver_x = np.arange(nx) * dx
                     offsets = receiver_x
+
                 else:
-                     #Чётное число, симметрия между двумя центральными
-                    receiver_x = (np.arange(nx) - (nx - 1) / 2) * dx
-                    offsets = receiver_x
-
-            #print("Первые 5 выносов:", offsets[:5])
-            #print("Последние 5 выносов:", offsets[-5:])
-    # @staticmethod
-    # def read(filepath, dx=30.0):
-    #     with sio.open(filepath, "r", strict=False) as seg_file:
-    #         gather = np.stack([seg_file.trace[i] for i in range(seg_file.tracecount)]).T
-    #
-    #         source_x = []
-    #         group_x = []
-    #         for i in range(seg_file.tracecount):
-    #             header = seg_file.header[i]
-    #             src_x = header[sio.TraceField.SourceX]
-    #             grp_x = header[sio.TraceField.GroupX]
-    #             source_x.append(src_x)
-    #             group_x.append(grp_x)
-    #
-    #         source_x = np.array(source_x)
-    #         group_x = np.array(group_x)
-    #
-    #         offsets = np.abs(group_x - source_x)
-    #
-    #         dt = seg_file.bin[sio.BinField.Interval] / 1_000_000.0  # микросек → сек
-
+                    if nx % 2 == 1:
+                                    # Нечётное число трасс, есть трасса под источником
+                        receiver_x = np.arange(-(nx // 2), nx // 2 + 1) * dx
+                        offsets = receiver_x
+                    else:
+                                     #Чётное число, симметрия между двумя центральными
+                        receiver_x = (np.arange(nx) - (nx - 1) / 2) * dx
+                        offsets = receiver_x
             return SegYData(
                 data=gather,
                 offsets=offsets,
