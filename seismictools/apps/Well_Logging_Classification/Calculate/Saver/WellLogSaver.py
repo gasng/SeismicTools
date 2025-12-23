@@ -1,42 +1,54 @@
+# Calculate/Saver/WellLogSaver.py
 import lasio
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 class WellLogSaver:
-    """Сохраняет WellLogData в LAS-файл."""
-
-    def save_las(self, well_data, file_path: str):
-        """
-        Сохраняет данные скважины в LAS-файл.
-
-        Args:
-            well_data: объект WellLogData
-            file_path: путь для сохранения .las файла
-        """
-        las = lasio.LASFile()
-
-        null_value = -999.25
-
-        well_keys = ['WELL', 'UWI', 'STRT', 'STOP', 'STEP', 'NULL', 'COMP', 'SRVC', 'DATE', 'PROV', 'FLD', 'LOC']
-        for key in well_keys:
-            if key in well_data.meta:
-                item = well_data.meta[key]
-                las.well.append(lasio.HeaderItem(
-                    mnemonic=key,
-                    unit=item.get('unit', ''),
-                    value=item.get('value', ''),
-                    descr=item.get('descr', '')
-                ))
-                if key == 'NULL':
-                    null_value = item['value']
-
-        for curve_name, data_array in well_data.curves.items():
-
-            clean_data = np.where(np.isnan(data_array), null_value, data_array)
-            las.append_curve(
-                mnemonic=curve_name,
-                data=clean_data,
-                unit='',
-                descr=''
-            )
-
-        las.write(file_path, version=2.0)
+    @staticmethod
+    def save_las_file(filepath, well_data):
+        try:
+            # Собираем данные
+            data_dict = {}
+            for name in well_data.curve_names:
+                curve = well_data.get_curve(name)
+                if curve is not None:
+                    # Заменяем NaN на -999.25
+                    curve_clean = curve.copy()
+                    curve_clean[np.isnan(curve_clean)] = -999.25
+                    data_dict[name] = curve_clean
+            
+            if not data_dict:
+                return False
+            
+            # Просто создаем файл через lasio без сложных параметров
+            las = lasio.LASFile()
+            
+            # Только обязательное поле
+            las.well['NULL'] = lasio.HeaderItem('NULL', value=-999.25)
+            
+            # Просто добавляем все кривые как есть
+            for name, curve in data_dict.items():
+                # Пробуем самый простой способ
+                try:
+                    # Для старых версий lasio
+                    las.add_curve(name, curve)
+                except:
+                    try:
+                        # Для новых версий
+                        las.append_curve(name, curve)
+                    except:
+                        # Просто записываем в data
+                        if not hasattr(las, 'data'):
+                            las.data = {}
+                        las.data[name] = curve
+            
+            # Сохраняем
+            las.write(filepath)
+            logger.info(f"Файл сохранен: {filepath}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Ошибка сохранения: {e}")
+            return False

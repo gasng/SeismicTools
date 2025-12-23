@@ -1,54 +1,70 @@
+# Calculate/Data/WellLogData.py
+import logging
 import numpy as np
 
+logger = logging.getLogger(__name__)
+
 class WellLogData:
-    def __init__(self, well_name):
-        self.well_name = well_name
-        self.depth_las = 'DEPT'
-        self.meta = {}
+    def __init__(self):
+        self.filename = ""
         self.curves = {}
-        self.length = 0
+        self.curve_names = []
+        self.class_labels = None
+        self.class_names = {}
+        self.class_colors = {}
+        self.metadata = {}
 
-    def set_curves(self, curves, depth_las):
-        """Установить кривые для скважины"""
-        if not curves:
-            raise ValueError('Нет кривых')
-        
-        lengths = {len(array) for array in curves.values()}
-        if len(lengths) != 1:
-            raise ValueError('Кривые разной длины')
-        
-        self.length = lengths.pop()
-        self.curves = curves
-        self.depth_las = depth_las
-        
-        if depth_las not in self.curves:
-            raise KeyError(f"Кривая глубины '{depth_las}' не найдена")
+    def get_class_color(self, class_id):
+        return self.class_colors.get(class_id, "#808080")
 
-    def depth(self):
-        """Получить массив глубин"""
-        return self.curves.get(self.depth_las, np.array([]))
-
-    def curve_names(self):
-        """Получить список имен кривых"""
-        return list(self.curves.keys())
+    def set_filename(self, filename):
+        self.filename = filename
 
     def add_curve(self, name, data):
-        """Добавить новую кривую"""
-        if len(data) != self.length:
-            raise ValueError(f'Длина кривой {name} ({len(data)}) не совпадает с длиной данных ({self.length})')
-        self.curves[name] = data
+        self.curves[name] = np.array(data)
+        if name not in self.curve_names:
+            self.curve_names.append(name)
 
-    def assign_class_labels(self, indices: list, class_label: int):
-        """Присвоить метку класса указанным индексам глубин"""
-        if "CLASS" not in self.curves:
-            self.curves["CLASS"] = np.full(self.length, -1, dtype=int)
-        self.curves["CLASS"][indices] = class_label
+    def get_curve(self, name):
+        return self.curves.get(name, None)
 
-    def get_points_for_crossplot(self, x_name, y_name):
-        x = self.curves[x_name]
-        y = self.curves[y_name]
-        d = self.curves[self.depth_las]
-        
-        valid = (np.isnan(x) == False) & (np.isnan(y) == False)
-        
-        return x[valid], y[valid], d[valid], np.arange(self.length)[valid]
+    def get_curve_names(self):
+        return self.curve_names.copy()
+
+    def set_class_labels(self, labels):
+        self.class_labels = np.array(labels)
+
+    def get_class_labels(self):
+        return self.class_labels
+
+    def add_class(self, class_id, class_name, color):
+        self.class_names[class_id] = class_name
+        self.class_colors[class_id] = color
+
+    def get_class_name(self, class_id):
+        return self.class_names.get(class_id, f"Класс {class_id}")
+
+    def get_class_color(self, class_id):
+        return self.class_colors.get(class_id, "#808080")
+
+    def get_num_points(self):
+        if len(self.curve_names) > 0:
+            return len(self.curves[self.curve_names[0]])
+        return 0
+
+    def clear(self):
+        self.filename = ""
+        self.curves.clear()
+        self.curve_names.clear()
+        self.class_labels = None
+        self.class_names.clear()
+        self.class_colors.clear()
+        self.metadata.clear()
+
+    def remove_curve(self, curve_name):
+        if curve_name in self.curves:
+            del self.curves[curve_name]
+            self.curve_names.remove(curve_name)
+            logger.debug(f"Кривая удалена: {curve_name}")
+            return True
+        return False

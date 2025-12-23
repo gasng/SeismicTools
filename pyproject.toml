@@ -2,7 +2,7 @@
 name = "seismictools"
 version = "0.1.0"
 description = ""
-authors = ["gasng <kamashev41@gmail.com>"]
+authors = ["ilyzthe"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -12,11 +12,11 @@ numpy = "^2.3.5"
 segyio = "^1.9.13"
 pyqtgraph = "^0.14.0"
 lasio = "^0.32"
-
+notebook = "^7.5.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-Example = 'seismictools.apps.example.main:main'
+WLC = 'seismictools.apps.Well_Logging_Classification.main:main'
