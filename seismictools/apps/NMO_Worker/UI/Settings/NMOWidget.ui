@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NMOWidget</class>
+ <widget class="QWidget" name="NMOWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1035</width>
+    <height>963</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* Основной стиль — тёмная тема */
+QWidget {
+    background-color: #2d2d2d;
+    color: #e6e6e6;
+    font-family: &quot;Segoe UI&quot;, &quot;Noto Sans&quot;, sans-serif;
+    font-size: 10pt;
+}
+
+/* Кнопки — округлые, с границей, хорошо различимы */
+QPushButton {
+    background-color: #3e3e3e;
+    border: 1px solid #555555;
+    border-radius: 10px;
+    padding: 8px 16px;
+    color: #ffffff;
+    min-width: 80px;
+    font-weight: 500;
+}
+
+QPushButton:hover {
+    background-color: #4c4c4c;
+    border: 1px solid #666666;
+}
+
+QPushButton:pressed {
+    background-color: #2a2a2a;
+    border: 1px solid #444444;
+}
+
+QPushButton:disabled {
+    background-color: #353535;
+    color: #888888;
+    border: 1px solid #444444;
+}
+
+/* RadioButton — теперь чётко виден, включая выбранное состояние */
+QRadioButton {
+    color: #e6e6e6;
+    background-color: transparent;
+    spacing: 8px;
+}
+
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #777777;
+    border-radius: 8px;
+    background-color: #252525;
+}
+
+QRadioButton::indicator:hover {
+    border: 2px solid #aaaaaa;
+}
+
+QRadioButton::indicator:checked {
+    border: 2px solid #00a8ff;
+    background-color: #00a8ff;
+}
+
+QRadioButton::indicator:checked:hover {
+    border: 2px solid #33ccff;
+    background-color: #00a8ff;
+}
+
+/* Заголовки таблиц — тёмные с белым текстом */
+QHeaderView::section {
+    background-color: #333333;
+    color: #ffffff;
+    padding: 6px;
+    border: 1px solid #444444;
+    font-weight: bold;
+}
+
+QHeaderView::section:hover {
+    background-color: #3a3a3a;
+}
+
+/* Таблицы */
+QTableWidget, QTableView {
+    background-color: #252525;
+    alternate-background-color: #2a2a2a;
+    gridline-color: #3c3c3c;
+    selection-background-color: #005682;
+    selection-color: #ffffff;
+    border: 1px solid #444444;
+}
+
+/* Поля ввода */
+QLineEdit, QSpinBox, QDoubleSpinBox {
+    background-color: #333333;
+    border: 1px solid #555555;
+    border-radius: 6px;
+    padding: 5px;
+    color: #ffffff;
+}
+
+QLineEdit:focus {
+    border: 1px solid #0078d7;
+}
+
+/* Скроллбар */
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #2b2b2b;
+    border: none;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #444444;
+    border-radius: 4px;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:hover {
+    background: #555555;
+}</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <widget class="QWidget" name="mainBox" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QWidget" name="leftBox" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QGroupBox" name="DataLoadBox">
+           <property name="title">
+            <string>Загрузка данных</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>SGY -  файл</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="Datalist"/>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_3" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QPushButton" name="pushButton_choice">
+                 <property name="text">
+                  <string>Обзор</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_load">
+                 <property name="text">
+                  <string>Загрузить</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_clear">
+                 <property name="text">
+                  <string>Очистить</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>формат: .sgy / .segy</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="VanalisisBox">
+           <property name="title">
+            <string>Скоростной анализ</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QWidget" name="widget" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <widget class="QPushButton" name="pushButton_velocitySpectrum">
+                 <property name="text">
+                  <string>Скоростной спектр</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_applyCorrections">
+                 <property name="text">
+                  <string>Поправки</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="pickBox">
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QRadioButton" name="radioButton_pick">
+                 <property name="text">
+                  <string>режим пикировки</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_view">
+                 <property name="text">
+                  <string>режим обзора</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="tableWidget_picks">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="columnCount">
+               <number>3</number>
+              </property>
+              <attribute name="horizontalHeaderVisible">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="horizontalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>№</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>t (с)</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>v (м/с)</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_2" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QPushButton" name="pushButton_undoPick">
+                 <property name="text">
+                  <string>Отменить пик</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_clearAll">
+                 <property name="text">
+                  <string>Очистить всё</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Окно состояния</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLineEdit" name="MessageLine"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="rightBox">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <layout class="QVBoxLayout" name="plotLayout">
+           <item>
+            <widget class="QFrame" name="frame">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="plotLayout2">
+           <item>
+            <widget class="QFrame" name="frame_2">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="plotLayout3">
+           <item>
+            <widget class="QFrame" name="frame_3">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
