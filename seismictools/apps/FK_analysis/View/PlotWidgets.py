@@ -46,6 +46,15 @@ class PlotSeism:
         img = pg.ImageItem()
         img.setImage(data, levels=(vmin, vmax))
         img.setRect((0, 0, dx * data.shape[1], dt * data.shape[0]))
+        # Ограничения по зуму
+        x_max = dx * data.shape[1]
+        y_max = dt * data.shape[0]
+        self.seismogram_pw.plotItem.vb.setLimits(
+            xMin=0,
+            xMax=x_max,
+            yMin=0,
+            yMax=y_max
+        )
         self.seismogram_pw.addItem(img)
         self.seismogram_pw.invertY(True)
         self.seismogram_pw.setLabel('left', 'Время', units='с')
@@ -70,7 +79,6 @@ class PlotSeism:
         freqs = np.fft.fftshift(np.fft.fftfreq(nt, dt))
         kx = np.fft.fftshift(np.fft.fftfreq(nx, dx))
 
-        # Сохраняем для маски
         self.fk_freq_axis = freqs
         self.fk_kx_axis = kx
 
@@ -89,6 +97,16 @@ class PlotSeism:
         self.fk_pw.setLabel('left', 'Частота', units='Гц')
         self.fk_pw.setLabel('bottom', 'Волновое число', units='1/м')
         self.fk_pw.setTitle('FK-спектр')
+
+        # Лимиты для зума
+        x0, x1 = kx[0], kx[-1]
+        y0, y1 = freqs[0], freqs[-1]
+        self.fk_pw.plotItem.vb.setLimits(
+            xMin=x0,
+            xMax=x1,
+            yMin=y0,
+            yMax=y1
+        )
         self.log_message("FK - спектр отображен")
 
     def plot_result(self, data: np.ndarray, dt: float, dx: float):
@@ -105,6 +123,15 @@ class PlotSeism:
         img = pg.ImageItem()
         img.setImage(data, levels=(vmin, vmax))
         img.setRect((0, 0, dx * data.shape[1], dt * data.shape[0]))
+        # Ограничения по зуму
+        x_max = dx * data.shape[1]
+        y_max = dt * data.shape[0]
+        self.result_pw.plotItem.vb.setLimits(
+            xMin=0,
+            xMax=x_max,
+            yMin=0,
+            yMax=y_max
+        )
         self.result_pw.addItem(img)
         self.result_pw.invertY(True)
         self.result_pw.setLabel('left', 'Время', units='с')
