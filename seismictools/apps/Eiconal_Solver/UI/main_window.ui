@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Eiconal Solver</string>
   </property>
   <property name="styleSheet">
    <string notr="true">/* Главное окно — чистый белый фон */

@@ -1,7 +1,10 @@
 import sys
+import os
 import numpy as np
 from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtGui import QIcon
 from seismictools.apps.Eiconal_Solver.Controller.Reader_worker import ReaderWorker
 from seismictools.apps.Eiconal_Solver.Controller.Solver_worker import SolverWorker
 from seismictools.apps.Eiconal_Solver.UI.main_window_ui import Ui_MainWindow
@@ -25,6 +28,10 @@ class EiconalSolver(QtWidgets.QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon('icon.png'))
+
+        self.settings = QSettings('Eiconal_Solver', 'eiconal_solver')
+        self.load_settings()
 
         self.ui.UploadButton.clicked.connect(self.upload_npy_file)
         self.ui.ClearButton.clicked.connect(self.clear_npy_file)
@@ -113,6 +120,8 @@ class EiconalSolver(QtWidgets.QMainWindow):
         self.ui.PlotWidget.addWidget(self.current_plot_widget)
 
         self.ui.trajectoriesWidget.clear()
+        self.model_trajectories_names.pop(self.current_model_path)
+        self.model_trajectories_names[self.current_model_path] = dict()
 
 
     def calculation(self):
@@ -276,6 +285,34 @@ class EiconalSolver(QtWidgets.QMainWindow):
     def scroll_status_bar(self):
         self.ui.StatusWidget.scrollToBottom()
 
+
+    def load_settings(self):
+        if self.settings.contains('geometry'):
+            self.restoreGeometry(self.settings.value('geometry'))
+        if self.settings.contains('state'):
+            self.restoreState(self.settings.value('state'))
+
+        recent_paths = self.settings.value('recent_paths')
+        if recent_paths is not None:
+            for path in recent_paths:
+                self.ui.UploadedFileWidget.addItem(path)
+                self.model_trajectories_names[path] = dict()
+
+
+    def save_settings(self):
+        self.settings.setValue('geometry', self.saveGeometry())
+        self.settings.setValue('state', self.saveState())
+
+        recent_paths = []
+        for i in range(self.ui.UploadedFileWidget.count()):
+            path = self.ui.UploadedFileWidget.item(i).text()
+            recent_paths.append(path)
+
+        self.settings.setValue('recent_paths', recent_paths)
+
+    def closeEvent(self, event):
+        self.save_settings()
+        super().closeEvent(event)
 
 
 

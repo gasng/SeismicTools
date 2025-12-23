@@ -137,8 +137,6 @@ class GatherPlotWidget(QWidget):
             else:
                 x, y = pos.x(), pos.y()
                 x0, y0 = self.start_point
-
-
                 dx = x - x0
                 dy = y - y0
                 self.theta = np.arctan2(dy, dx)
@@ -151,5 +149,10 @@ class GatherPlotWidget(QWidget):
         if self.is_drawing_vector and self.start_point is not None:
             pos_view = self.plot_widget.plotItem.vb.mapSceneToView(pos_scene)
             x0, y0 = self.start_point
-            x1, y1 = pos_view.x(), pos_view.y()
-            self.vector.setData(x=[x0, x1], y=[y0, y1])
+            x, y = pos_view.x(), pos_view.y()
+            dx = x - x0
+            dy = y - y0
+            l = np.hypot(dx, dy)
+            dx = (dx / l) * (50 * self.delta)
+            dy = (dy / l) * (50 * self.delta)
+            self.vector.setData(x=[x0, x0 + dx], y=[y0, y0 + dy])
