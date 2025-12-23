@@ -20,3 +20,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 Example = 'seismictools.apps.example.main:main'
+FK-filtration = 'seismictools.apps.FK_analysis.main:main'
