@@ -1,5 +1,9 @@
 import numpy as np
 from scipy.signal import butter, filtfilt
+"""
+butter - функция для использования фильтра Баттерворта
+filtfilt - функция для безфазовой фильтрации (применяет фильтр вперёд и назад, устраняя сдвиг фазы)
+"""
 
 class BandPassFilter:
     def __init__(self, type_filter, freq, fs, order=4):
