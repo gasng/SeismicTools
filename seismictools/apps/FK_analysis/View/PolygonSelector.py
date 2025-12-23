@@ -50,3 +50,16 @@ class PolygonSelector:
 
     def get_points(self):
         return self.points.copy()
+
+    def remove_last_point(self):
+        if self.points:
+            self.points.pop()
+            self._update_visuals()
+            if not self.points:
+                if self.scatter:
+                    self.plot_widget.removeItem(self.scatter)
+                    self.scatter = None
+                if self.polygon_line:
+                    self.plot_widget.removeItem(self.polygon_line)
+                    self.polygon_line = None
+        return True

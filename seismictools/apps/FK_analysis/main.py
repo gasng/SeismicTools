@@ -166,6 +166,11 @@ class FK_filter(QtWidgets.QMainWindow):
     def on_fk_click(self, event):
         if self.polygon_selector.is_selecting and event.button() == QtCore.Qt.MouseButton.LeftButton:
             self.polygon_selector.add_point(event.scenePos())
+        elif self.polygon_selector.is_selecting and event.button() == QtCore.Qt.MouseButton.RightButton:
+            removed = self.polygon_selector.remove_last_point()
+            if removed:
+                self.ui.ErrorLW.addItem("Точка удалена")
+                self.ui.ErrorLW.scrollToBottom()
 
     def finish_selection(self):
         if self.polygon_selector.finish_selection():
