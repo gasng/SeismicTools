@@ -286,11 +286,6 @@ class Ui_NMOWidget(object):
 
         self.horizontalLayout_3.addWidget(self.MessageLine)
 
-        self.MessageBtn = QPushButton(self.groupBox)
-        self.MessageBtn.setObjectName(u"MessageBtn")
-
-        self.horizontalLayout_3.addWidget(self.MessageBtn)
-
 
         self.verticalLayout.addWidget(self.groupBox)
 
@@ -375,7 +370,6 @@ class Ui_NMOWidget(object):
         self.pushButton_undoPick.setText(QCoreApplication.translate("NMOWidget", u"\u041e\u0442\u043c\u0435\u043d\u0438\u0442\u044c \u043f\u0438\u043a", None))
         self.pushButton_clearAll.setText(QCoreApplication.translate("NMOWidget", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0432\u0441\u0451", None))
         self.groupBox.setTitle(QCoreApplication.translate("NMOWidget", u"\u041e\u043a\u043d\u043e \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u044f", None))
-        self.MessageBtn.setText(QCoreApplication.translate("NMOWidget", u"PushButton", None))
         self.rightBox.setTitle("")
     # retranslateUi
 

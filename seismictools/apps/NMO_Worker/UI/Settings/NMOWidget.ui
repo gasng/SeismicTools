@@ -316,13 +316,6 @@ QScrollBar::handle:hover {
             <item>
              <widget class="QLineEdit" name="MessageLine"/>
             </item>
-            <item>
-             <widget class="QPushButton" name="MessageBtn">
-              <property name="text">
-               <string>PushButton</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
          </item>
