@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GridWorkerWindow</class>
+ <widget class="QMainWindow" name="GridWorkerWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>799</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Grid Worker</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
+      <item>
+       <widget class="QSplitter" name="splitter_3">
+        <property name="toolTipDuration">
+         <number>-1</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Orientation::Vertical</enum>
+        </property>
+        <widget class="QGroupBox" name="groupBox_load">
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: rgb(195, 193, 255);
+    color: white;
+    border-radius: 8px;
+	padding: 8px;
+}
+QPushButton:pressed {
+    background-color: rgb(140, 138, 200);  /* Темнее */
+}
+QGroupBox {
+    background-color: rgb(226, 227, 255);
+    font-weight: bold;
+    color: rgb(35, 35, 35);
+	border: 2px solid #888888;
+    border-radius: 6px;
+    margin-top: 10px;
+    padding: 10px;
+}
+QLabel {
+    color: rgb(60, 60, 200);
+    font-size: 14px;
+}</string>
+         </property>
+         <property name="title">
+          <string>Загрузка карты</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QSplitter" name="splitter_2">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(226, 227, 255);</string>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="toolTipDuration">
+              <number>-1</number>
+             </property>
+             <property name="text">
+              <string>Файл:</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="lineEdit_filePath">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid #888888;
+border-radius: 6px;
+margin-top: 3px;
+padding: 3px;</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSplitter" name="splitter">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <widget class="QPushButton" name="pushButton_load">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Загрузить</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_clear">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Очистить</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_select">
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: rgb(195, 193, 255);
+    color: white;
+    border-radius: 8px;
+}
+QPushButton:pressed {
+    background-color: rgb(140, 138, 200);  /* Темнее */
+}
+QGroupBox {
+    background-color: rgb(226, 227, 255);
+    font-weight: bold;
+    color: rgb(35, 35, 35);
+	border: 2px solid #888888;
+    border-radius: 6px;
+    margin-top: 10px;
+    padding: 10px;
+}
+QLabel {
+    color: rgb(60, 60, 200);
+    font-size: 14px;
+}
+</string>
+         </property>
+         <property name="title">
+          <string>Выделение объектов</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QSplitter" name="splitter_5">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <widget class="QPushButton" name="pushButton_addObject">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Добавить объект</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_2">
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+              </font>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;  ТЕКУЩИЕ ОБЪЕКТЫ:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+            <widget class="QListWidget" name="listWidget_objects">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid #888888;
+border-radius: 6px;
+margin-top: 3px;
+padding: 3px;</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QPushButton" name="pushButton_save">
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    background-color: rgb(192, 187, 255);
+    color: white;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 14px;
+}
+QPushButton:pressed {
+    background-color: rgb(140, 138, 200);  /* Темнее */
+}</string>
+         </property>
+         <property name="text">
+          <string>Сохранить выделенные объекты</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGraphicsView" name="label_map">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);
+border: 2px solid #888888;
+border-radius: 6px;
+margin-top: 3 px;
+</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

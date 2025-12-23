@@ -6,9 +6,17 @@ authors = ["gasng <kamashev41@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.12,<3.15"
+pyside6 = "^6.10.1"
+numpy = "^2.3.5"
+segyio = "^1.9.13"
+pyqtgraph = "^0.14.0"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+Example = 'seismictools.apps.example.main:main'
+GridWorker = 'seismictools.apps.GridWorker.main:main'
